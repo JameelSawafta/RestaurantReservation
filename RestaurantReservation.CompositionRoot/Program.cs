@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RestaurantReservation.Db.DbContext;
 
 
 namespace RestaurantReservation.CompositionRoot;
@@ -21,6 +22,9 @@ class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddDbContext<RestaurantReservationDbContext>(
+            dbContext => dbContext.UseNpgsql(builder.Configuration["ConnectionStrings:constr"]));
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
