@@ -12,11 +12,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/appsettings.Development.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/RestaurantReservation.Db.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/RestaurantReservation.Db.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/RestaurantReservation.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/RestaurantReservation.Domain.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +112,9 @@
       <updated>1733154045722</updated>
       <workItem from="1733154046836" duration="8557000" />
       <workItem from="1733204812550" duration="13160000" />
+      <workItem from="1733307368521" duration="6502000" />
+      <workItem from="1733394879260" duration="5386000" />
+      <workItem from="1733429390266" duration="1411000" />
     </task>
     <servers />
   </component>
