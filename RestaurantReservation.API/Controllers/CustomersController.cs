@@ -1,11 +1,14 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantReservation.Domain.Interfaces.Services;
+using RestaurantReservation.Domain.Models;
 using RestaurantReservation.Domain.Models.Customer;
 
 namespace RestaurantReservation.API.Controllers;
 
 [ApiController]
-[Route("api/Customer")]
+[Route("api/customer")]
+[ApiVersion(1.0)]
 public class CustomersController : Controller
 {
     private readonly ICustomerService _customerService;
@@ -16,10 +19,15 @@ public class CustomersController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll()
+    public async Task<ActionResult<PaginatedList<CustomerDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        var customers = await _customerService.GetAllCustomersAsync();
-        return Ok(customers);
+        if (pageNumber < 1 || pageSize < 1)
+            return BadRequest("PageNumber and PageSize must be greater than 0.");
+
+        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+        
+        var paginatedCustomers = await _customerService.GetAllCustomersAsync(pageNumber, pageSize, baseUrl);
+        return Ok(paginatedCustomers);
     }
 
     [HttpGet("{id}")]

@@ -12,9 +12,14 @@
   <component name="ChangeListManager">
     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/RestaurantReservation.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/RestaurantReservation.API.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/RestaurantReservation.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/RestaurantReservation.Domain.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/CRUDRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/CRUDRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/ICRUDRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/ICRUDRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/ICustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/ICustomerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/CustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/CustomerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservationCore.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservationCore.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +34,8 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9191eac31f284a10b284fabb9f96c4bcc2d600/94/f95d1264/Directory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b34eef3a22e5b353fa75af531b179226d42b88d39fbefa3f0d8d4372def62a3/HttpRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fd835a55676976b3933e80134c6e68587569c6383717d386e32295d11fcf3f/ApiVersion.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="Toolset" />
@@ -42,22 +49,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor": "Run",
-    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor": "Run",
-    ".NET Project.RestaurantReservation.CompositionRoot.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.RestaurantReservation.CompositionRoot.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http">
+}</component>
+  <component name="RunManager" selected=".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https">
     <configuration name="RestaurantReservation.CompositionRoot" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -119,7 +126,8 @@
       <workItem from="1733204812550" duration="13160000" />
       <workItem from="1733307368521" duration="6502000" />
       <workItem from="1733394879260" duration="5386000" />
-      <workItem from="1733429390266" duration="10667000" />
+      <workItem from="1733429390266" duration="12295000" />
+      <workItem from="1733481797986" duration="17698000" />
     </task>
     <servers />
   </component>

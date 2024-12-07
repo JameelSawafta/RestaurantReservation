@@ -16,9 +16,18 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
     }
 
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
     {
-        return await _dbSet.ToListAsync();
+        if (pageNumber < 1 || pageSize < 1)
+            throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
+
+        var totalCount = await _dbSet.CountAsync();
+        var items = await _dbSet
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<T> GetByIdAsync(Guid id)

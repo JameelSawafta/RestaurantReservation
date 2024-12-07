@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +49,16 @@ class Program
         //     );
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+        builder.Services.AddApiVersioning(
+            setupAction =>
+            {
+                setupAction.ReportApiVersions = true;
+                setupAction.AssumeDefaultVersionWhenUnspecified = true;
+                setupAction.DefaultApiVersion =
+                    ApiVersion.Default; 
+                setupAction.ApiVersionReader = new HeaderApiVersionReader("x-version");
+            }
+        );
         
         var app = builder.Build();
 

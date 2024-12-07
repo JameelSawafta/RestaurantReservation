@@ -2,6 +2,7 @@ using AutoMapper;
 using RestaurantReservation.Domain.Entities;
 using RestaurantReservation.Domain.Interfaces.Repositories;
 using RestaurantReservation.Domain.Interfaces.Services;
+using RestaurantReservation.Domain.Models;
 using RestaurantReservation.Domain.Models.Customer;
 
 namespace RestaurantReservation.Domain.Services;
@@ -17,10 +18,17 @@ public class CustomerService : ICustomerService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync()
+    public async Task<PaginatedList<CustomerDto>> GetAllCustomersAsync(int pageNumber, int pageSize, string baseUrl)
     {
-        var customers = await _customerRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<CustomerDto>>(customers);
+        var (customers, totalItemCount) = await _customerRepository.GetAllAsync(pageNumber, pageSize);
+        
+        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+
+        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
+        
+        var customerDtos = _mapper.Map<IEnumerable<CustomerDto>>(customers);
+
+        return new PaginatedList<CustomerDto>(customerDtos.ToList(), pageData);
     }
 
     public async Task<CustomerDto> GetCustomerByIdAsync(Guid id)
@@ -41,7 +49,7 @@ public class CustomerService : ICustomerService
         var customer = await _customerRepository.GetByIdAsync(id);
         if (customer == null) return null;
 
-        _mapper.Map(customerDto, customer); // Update existing customer with new values
+        _mapper.Map(customerDto, customer);
         var updatedCustomer = await _customerRepository.UpdateAsync(customer);
         return _mapper.Map<CustomerDto>(updatedCustomer);
     }
