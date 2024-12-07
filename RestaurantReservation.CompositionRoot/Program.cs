@@ -50,6 +50,8 @@ class Program
         builder.Services.AddScoped<ITableRepository, TableRepository>();
         builder.Services.AddScoped<ITableService, TableService>();
 
+        builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
         
         // builder.Services.AddAutoMapper(
         //     typeof(CustomerMappingProfile).Assembly
