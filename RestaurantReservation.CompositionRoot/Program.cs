@@ -44,6 +44,9 @@ class Program
         builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
         builder.Services.AddScoped<ICustomerService, CustomerService>();
         
+        builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+        builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+        
         // builder.Services.AddAutoMapper(
         //     typeof(CustomerMappingProfile).Assembly
         //     );
