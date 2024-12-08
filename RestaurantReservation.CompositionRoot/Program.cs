@@ -53,6 +53,9 @@ class Program
         builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         builder.Services.AddScoped<IEmployeeService, EmployeeService>();
         
+        builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+        builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+        
         // builder.Services.AddAutoMapper(
         //     typeof(CustomerMappingProfile).Assembly
         //     );
