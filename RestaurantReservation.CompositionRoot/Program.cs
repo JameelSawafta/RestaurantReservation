@@ -59,6 +59,9 @@ class Program
         builder.Services.AddScoped<IOrderRepository, OrderRepository>();
         builder.Services.AddScoped<IOrderService, OrderService>();
         
+        builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+        builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+        
         // builder.Services.AddAutoMapper(
         //     typeof(CustomerMappingProfile).Assembly
         //     );
