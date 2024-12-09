@@ -1,9 +1,12 @@
-﻿using Asp.Versioning;
+﻿using System.Text;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using RestaurantReservation.API.Controllers;
 using RestaurantReservation.Db.DbContext;
 using RestaurantReservation.Db.Repositories;
@@ -28,6 +31,22 @@ class Program
         //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         //     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
            
+        
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Authentication:Issuer"], 
+                    ValidAudience = builder.Configuration["Authentication:Audience"], 
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+                };
+            });
+
         
         // Add services to the container.
         builder.Services.AddAuthorization();
@@ -94,6 +113,8 @@ class Program
         
         app.UseRouting();
 
+        app.UseAuthentication();
+        
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

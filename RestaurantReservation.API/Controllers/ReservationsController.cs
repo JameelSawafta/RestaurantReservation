@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantReservation.Domain.Interfaces.Services;
 using RestaurantReservation.Domain.Models;
@@ -10,6 +11,7 @@ namespace RestaurantReservation.API.Controllers;
 [ApiController]
 [Route("api/reservation")]
 [ApiVersion(1.0)]
+[Authorize]
 public class ReservationsController : Controller
 {
     private readonly IReservationService _reservationService;
