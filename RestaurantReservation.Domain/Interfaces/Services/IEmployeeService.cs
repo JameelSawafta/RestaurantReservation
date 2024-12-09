@@ -12,4 +12,5 @@ public interface IEmployeeService
     Task<bool> DeleteEmployeeAsync(Guid id);
     
     Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl);
+    Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId);
 }

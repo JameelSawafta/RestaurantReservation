@@ -26,4 +26,16 @@ public class EmployeeRepository : CRUDRepository<Employee>, IEmployeeRepository
 
         return (items, totalCount);
     }
+    
+    public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)
+    {
+        var orders = await _context.Orders
+            .Where(o => o.EmployeeId == employeeId)
+            .ToListAsync();
+
+        if (!orders.Any())
+            return 0;
+
+        return orders.Average(o => o.TotalAmount);
+    }
 }

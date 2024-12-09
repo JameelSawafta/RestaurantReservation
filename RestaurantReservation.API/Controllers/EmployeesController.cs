@@ -72,4 +72,15 @@ public class EmployeesController : Controller
         var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize, baseUrl);
         return Ok(paginatedManagers);
     }
+    
+    [HttpGet("{employeeId}/average-order-amount")]
+    public async Task<IActionResult> GetAverageOrderAmountByEmployee(Guid employeeId)
+    {
+        var averageOrderAmount = await _employeeService.GetAverageOrderAmountByEmployeeAsync(employeeId);
+            
+        if (averageOrderAmount == 0)
+            return NotFound($"No orders found for employee with ID {employeeId}.");
+
+        return Ok(new { EmployeeId = employeeId, AverageOrderAmount = averageOrderAmount });
+    }
 }

@@ -69,4 +69,9 @@ public class EmployeeService : IEmployeeService
 
         return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);
     }
+    
+    public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)
+    {
+        return await _employeeRepository.GetAverageOrderAmountByEmployeeAsync(employeeId);
+    }
 }
