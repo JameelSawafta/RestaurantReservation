@@ -21,5 +21,4 @@ public class MenuItem
 
     [ForeignKey("RestaurantId")]
     public Restaurant Restaurant { get; set; }
-    public ICollection<OrderItem> OrderItems { get; set; }
 }

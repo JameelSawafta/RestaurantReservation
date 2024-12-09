@@ -14,8 +14,12 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/ReservationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/ReservationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/MenuItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/MenuItem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/OrderItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/OrderItem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IReservationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IReservationRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IReservationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IReservationService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Order/OrderDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Order/OrderDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/OrderItem/OrderItemDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/OrderItem/OrderItemDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/ReservationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/ReservationService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -129,7 +133,7 @@
       <workItem from="1733481797986" duration="18088000" />
       <workItem from="1733570736430" duration="18171000" />
       <workItem from="1733656253716" duration="17255000" />
-      <workItem from="1733740817580" duration="17359000" />
+      <workItem from="1733740817580" duration="26103000" />
     </task>
     <servers />
   </component>

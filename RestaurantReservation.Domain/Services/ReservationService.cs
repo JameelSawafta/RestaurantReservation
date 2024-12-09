@@ -3,6 +3,7 @@ using RestaurantReservation.Domain.Entities;
 using RestaurantReservation.Domain.Interfaces.Repositories;
 using RestaurantReservation.Domain.Interfaces.Services;
 using RestaurantReservation.Domain.Models;
+using RestaurantReservation.Domain.Models.Order;
 using RestaurantReservation.Domain.Models.Reservation;
 
 namespace RestaurantReservation.Domain.Services;
@@ -69,5 +70,17 @@ public class ReservationService : IReservationService
 
         return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);
         
+    }
+    
+    public async Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize, string baseUrl)
+    {
+        var (orders, totalItemCount) = await _reservationRepository.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize);
+
+        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+
+        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
+        var orderDtos = _mapper.Map<IEnumerable<DetailedOrderDto>>(orders);
+
+        return new PaginatedList<DetailedOrderDto>(orderDtos.ToList(), pageData);
     }
 }

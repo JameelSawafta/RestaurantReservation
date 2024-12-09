@@ -1,4 +1,5 @@
 using RestaurantReservation.Domain.Models;
+using RestaurantReservation.Domain.Models.Order;
 using RestaurantReservation.Domain.Models.Reservation;
 
 namespace RestaurantReservation.Domain.Interfaces.Services;
@@ -12,4 +13,5 @@ public interface IReservationService
     Task<bool> DeleteReservationAsync(Guid reservationId);
     
     Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize, string baseUrl);
+    Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize, string baseUrl);
 }

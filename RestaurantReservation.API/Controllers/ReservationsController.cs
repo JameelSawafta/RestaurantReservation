@@ -2,6 +2,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantReservation.Domain.Interfaces.Services;
 using RestaurantReservation.Domain.Models;
+using RestaurantReservation.Domain.Models.Order;
 using RestaurantReservation.Domain.Models.Reservation;
 
 namespace RestaurantReservation.API.Controllers;
@@ -71,5 +72,17 @@ public class ReservationsController : Controller
 
         var paginatedManagers = await _reservationService.GetReservationsByCustomerIdAsync(customerId,pageNumber, pageSize, baseUrl);
         return Ok(paginatedManagers);
+    }
+    
+    [HttpGet("{reservationId}/orders")]
+    public async Task<ActionResult<PaginatedList<DetailedOrderDto>>> GetOrdersByReservationId(Guid reservationId, int pageNumber = 1, int pageSize = 10)
+    {
+        if (pageNumber < 1 || pageSize < 1)
+            return BadRequest("PageNumber and PageSize must be greater than 0.");
+
+        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+
+        var paginatedOrders = await _reservationService.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize, baseUrl);
+        return Ok(paginatedOrders);
     }
 }
