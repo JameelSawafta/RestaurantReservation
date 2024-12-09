@@ -11,7 +11,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/RestaurantReservation.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/RestaurantReservation.API.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Migrations/RestaurantReservationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Migrations/RestaurantReservationDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/Employee.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Entities/Employee.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/CreateEmployeeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/CreateEmployeeDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/EmployeeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/EmployeeDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/UpdateEmployeeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Models/Employee/UpdateEmployeeDto.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +133,8 @@
       <workItem from="1733429390266" duration="12295000" />
       <workItem from="1733481797986" duration="18088000" />
       <workItem from="1733570736430" duration="18171000" />
-      <workItem from="1733656253716" duration="16913000" />
+      <workItem from="1733656253716" duration="17255000" />
+      <workItem from="1733740817580" duration="11532000" />
     </task>
     <servers />
   </component>

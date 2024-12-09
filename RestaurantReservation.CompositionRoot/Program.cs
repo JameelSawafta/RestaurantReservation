@@ -21,13 +21,13 @@ class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..");
-        basePath = Path.GetFullPath(basePath);
-        builder.Configuration
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
-            
+        // string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..");
+        // basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
+        // builder.Configuration
+        //     .SetBasePath(basePath)
+        //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        //     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+           
         
         // Add services to the container.
         builder.Services.AddAuthorization();

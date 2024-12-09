@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using RestaurantReservation.Domain.Enums;
 
 namespace RestaurantReservation.Domain.Entities;
 
@@ -15,8 +16,8 @@ public class Employee
     [Required]
     [MaxLength(50)]
     public string LastName { get; set; }
-    [MaxLength(50)]
-    public string Position { get; set; }
+    [Required]
+    public EmployeePosition Position { get; set; }
     
     [ForeignKey("RestaurantId")]
     public Restaurant Restaurant { get; set; }
