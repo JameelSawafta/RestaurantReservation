@@ -10,4 +10,6 @@ public interface IEmployeeService
     Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto employeeDto);
     Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto);
     Task<bool> DeleteEmployeeAsync(Guid id);
+    
+    Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl);
 }

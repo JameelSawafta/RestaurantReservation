@@ -60,4 +60,16 @@ public class EmployeesController : Controller
         if (!success) return NotFound();
         return NoContent();
     }
+    
+    [HttpGet("managers")]
+    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAllManagers(int pageNumber = 1, int pageSize = 10)
+    {
+        if (pageNumber < 1 || pageSize < 1)
+            return BadRequest("PageNumber and PageSize must be greater than 0.");
+
+        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+
+        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize, baseUrl);
+        return Ok(paginatedManagers);
+    }
 }

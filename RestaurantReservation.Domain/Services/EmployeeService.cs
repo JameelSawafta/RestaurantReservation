@@ -17,8 +17,7 @@ public class EmployeeService : IEmployeeService
         _employeeRepository = employeeRepository;
         _mapper = mapper;
     }
-
-
+    
     public async Task<PaginatedList<EmployeeDto>> GetAllEmployeesAsync(int pageNumber, int pageSize, string baseUrl)
     {
         var (employees, totalItemCount) = await _employeeRepository.GetAllAsync(pageNumber, pageSize);
@@ -57,5 +56,17 @@ public class EmployeeService : IEmployeeService
     public async Task<bool> DeleteEmployeeAsync(Guid id)
     {
         return await _employeeRepository.DeleteAsync(id);
+    }
+    
+    public async Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl)
+    {
+        var (managers, totalItemCount) = await _employeeRepository.GetManagersAsync(pageNumber, pageSize);
+
+        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+
+        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
+        var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(managers);
+
+        return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);
     }
 }
