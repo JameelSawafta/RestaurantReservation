@@ -10,4 +10,6 @@ public interface IReservationService
     Task<ReservationDto> CreateReservationAsync(CreateReservationDto reservationDto);
     Task<ReservationDto> UpdateReservationAsync(Guid reservationId, UpdateReservationDto reservationDto);
     Task<bool> DeleteReservationAsync(Guid reservationId);
+    
+    Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize, string baseUrl);
 }

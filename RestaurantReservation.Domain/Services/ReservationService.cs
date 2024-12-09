@@ -57,4 +57,17 @@ public class ReservationService : IReservationService
     {
         return await _reservationRepository.DeleteAsync(reservationId);
     }
+    
+    public async Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize, string baseUrl)
+    {
+        var (reservations, totalItemCount) = await _reservationRepository.GetReservationsByCustomerIdAsync(customerId, pageNumber, pageSize);
+
+        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+
+        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
+        var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+
+        return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);
+        
+    }
 }

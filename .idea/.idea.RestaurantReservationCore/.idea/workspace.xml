@@ -12,11 +12,11 @@
   <component name="ChangeListManager">
     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/EmployeeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/EmployeeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IEmployeeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IEmployeeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/EmployeeService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/EmployeeService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/ReservationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/ReservationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IReservationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Repositories/IReservationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IReservationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/IReservationService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/ReservationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/ReservationService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +129,7 @@
       <workItem from="1733481797986" duration="18088000" />
       <workItem from="1733570736430" duration="18171000" />
       <workItem from="1733656253716" duration="17255000" />
-      <workItem from="1733740817580" duration="15723000" />
+      <workItem from="1733740817580" duration="17359000" />
     </task>
     <servers />
   </component>
