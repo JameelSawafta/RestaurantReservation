@@ -10,7 +10,7 @@ namespace RestaurantReservation.API.Controllers;
 
 [ApiController]
 [Route("api/reservation")]
-[ApiVersion(1.0)]
+[ApiVersion("1.0")]
 [Authorize]
 public class ReservationsController : Controller
 {
