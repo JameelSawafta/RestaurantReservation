@@ -12,14 +12,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/MenuItemsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/MenuItemsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrderItemsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrderItemsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrdersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrdersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/RestaurantsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/RestaurantsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/TablesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/TablesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +128,7 @@
       <workItem from="1733570736430" duration="18171000" />
       <workItem from="1733656253716" duration="17255000" />
       <workItem from="1733740817580" duration="32497000" />
-      <workItem from="1733825400461" duration="305000" />
+      <workItem from="1733825400461" duration="959000" />
     </task>
     <servers />
   </component>
