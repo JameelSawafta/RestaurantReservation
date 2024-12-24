@@ -23,6 +23,7 @@ public class MenuItemsController : Controller
     [HttpGet]
     public async Task<ActionResult<PaginatedList<MenuItemDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
+        // add the logic to get all menu items with pagination
         if (pageNumber < 1 || pageSize < 1)
             return BadRequest("PageNumber and PageSize must be greater than 0.");
 
@@ -33,26 +34,23 @@ public class MenuItemsController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MenuItemDto>> GetById(Guid id)
+    public async Task<MenuItemDto> GetById(Guid id)
     {
-        var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
-        if (menuItem == null) return NotFound();
-        return Ok(menuItem);
+        return await _menuItemService.GetMenuItemByIdAsync(id);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateMenuItemDto menuItemDto)
     {
         var createdMenuItem = await _menuItemService.CreateMenuItemAsync(menuItemDto);
+        // why?
         return CreatedAtAction(nameof(GetById), new { id = createdMenuItem.ItemId }, createdMenuItem);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<MenuItemDto>> Update(Guid id, UpdateMenuItemDto menuItemDto)
+    public async Task<MenuItemDto> Update(Guid id, UpdateMenuItemDto menuItemDto)
     {
-        var updatedMenuItem = await _menuItemService.UpdateMenuItemAsync(id, menuItemDto);
-        if (updatedMenuItem == null) return NotFound();
-        return Ok(updatedMenuItem);
+        return await _menuItemService.UpdateMenuItemAsync(id, menuItemDto);
     }
 
     [HttpDelete("{id}")]

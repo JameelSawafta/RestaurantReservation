@@ -36,14 +36,14 @@ public class OrderService : IOrderService
         return order == null ? null : _mapper.Map<OrderDto>(order);
     }
 
-    public async Task<OrderDto> CreateOrderAsync(CreateOrderDto orderDto)
+    public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
     {
         var order = _mapper.Map<Order>(orderDto);
         var createdOrder = await _orderRepository.CreateAsync(order);
         return _mapper.Map<OrderDto>(createdOrder);
     }
 
-    public async Task<OrderDto> UpdateOrderAsync(Guid orderId, UpdateOrderDto orderDto)
+    public async Task<OrderDto> UpdateOrderAsync(Guid orderId, OrderDto orderDto)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);
         if (order == null) return null;

@@ -7,7 +7,7 @@ public interface IOrderService
 {
     Task<PaginatedList<OrderDto>> GetAllOrdersAsync(int pageNumber, int pageSize, string baseUrl);
     Task<OrderDto> GetOrderByIdAsync(Guid orderId);
-    Task<OrderDto> CreateOrderAsync(CreateOrderDto orderDto);
-    Task<OrderDto> UpdateOrderAsync(Guid orderId, UpdateOrderDto orderDto);
+    Task<OrderDto> CreateOrderAsync(OrderDto orderDto);
+    Task<OrderDto> UpdateOrderAsync(Guid orderId, OrderDto orderDto);
     Task<bool> DeleteOrderAsync(Guid orderId);
 }

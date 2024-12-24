@@ -18,6 +18,7 @@ public class TableService : ITableService
         _mapper = mapper;
     }
 
+    // try to create a generic service for the generic operations
     public async Task<PaginatedList<TableDto>> GetAllTablesAsync(int pageNumber, int pageSize, string baseUrl)
     {
         var (tables, totalItemCount) = await _tableRepository.GetAllAsync(pageNumber, pageSize);

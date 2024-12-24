@@ -16,12 +16,15 @@ public class AuthenticationController : Controller
         _configuration = configuration;
     }
     
+    // split to another class file
     public class AuthenticationRequestBody
     {
         public string? UserName { get; set; }
         public string? Password { get; set; }
     }
     
+    // split to another class file
+
     private class User
     {
         public int UserId { get; set; }
@@ -44,9 +47,13 @@ public class AuthenticationController : Controller
     }
     
     
-    [HttpPost("authenticate")]
+    [HttpPost("authenticate")] // it will be /api/authentication/authenticate I prefer keep it post only
     public ActionResult<string> Authenticate(AuthenticationRequestBody authenticationRequestBody)
     {
+        
+        // split it to have service level 
+        // create authentication service
+        
         var user = ValidateUserCredential(
             authenticationRequestBody.UserName,
             authenticationRequestBody.Password
@@ -85,6 +92,8 @@ public class AuthenticationController : Controller
     
     private User? ValidateUserCredential(string? userName, string? password)
     {
+        // you can use the db to validate the user
+        // save the credentials in the db
         if (!(userName == "jameel" && password == "123456"))
         {
             return null;

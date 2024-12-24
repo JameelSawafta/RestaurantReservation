@@ -37,14 +37,14 @@ public class ReservationService : IReservationService
         return reservation == null ? null : _mapper.Map<ReservationDto>(reservation);
     }
 
-    public async Task<ReservationDto> CreateReservationAsync(CreateReservationDto reservationDto)
+    public async Task<ReservationDto> CreateReservationAsync(ReservationDto reservationDto)
     {
         var reservation = _mapper.Map<Reservation>(reservationDto);
         var createdReservation = await _reservationRepository.CreateAsync(reservation);
         return _mapper.Map<ReservationDto>(createdReservation);
     }
 
-    public async Task<ReservationDto> UpdateReservationAsync(Guid reservationId, UpdateReservationDto reservationDto)
+    public async Task<ReservationDto> UpdateReservationAsync(Guid reservationId, ReservationDto reservationDto)
     {
         var reservation = await _reservationRepository.GetByIdAsync(reservationId);
         if (reservation == null) return null;

@@ -14,6 +14,8 @@ public class EmployeeRepository : CRUDRepository<Employee>, IEmployeeRepository
     
     public async Task<(IEnumerable<Employee>, int TotalCount)> GetManagersAsync(int pageNumber, int pageSize)
     {
+        // add a special service to validate the pagination parameters, since you used it for multiple services
+        // separation of concerns + code reusability
         if (pageNumber < 1 || pageSize < 1)
             throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
 

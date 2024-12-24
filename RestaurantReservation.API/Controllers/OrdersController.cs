@@ -13,6 +13,8 @@ namespace RestaurantReservation.API.Controllers;
 [Authorize]
 public class OrdersController : Controller
 {
+    // same as other controller
+
     private readonly IOrderService _orderService;
 
     public OrdersController(IOrderService orderService)
@@ -41,14 +43,14 @@ public class OrdersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateOrderDto orderDto)
+    public async Task<IActionResult> Create(OrderDto orderDto)
     {
         var createdOrder = await _orderService.CreateOrderAsync(orderDto);
         return CreatedAtAction(nameof(GetById), new { id = createdOrder.OrderId }, createdOrder);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<OrderDto>> Update(Guid id, UpdateOrderDto orderDto)
+    public async Task<ActionResult<OrderDto>> Update(Guid id, OrderDto orderDto)
     {
         var updatedOrder = await _orderService.UpdateOrderAsync(id, orderDto);
         if (updatedOrder == null) return NotFound();

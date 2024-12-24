@@ -21,6 +21,7 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
         if (pageNumber < 1 || pageSize < 1)
             throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
 
+        // try to find a better way ti implement pagination
         var totalCount = await _dbSet.CountAsync();
         var items = await _dbSet
             .Skip((pageNumber - 1) * pageSize)
@@ -29,9 +30,11 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
 
         return (items, totalCount);
     }
-
-    public async Task<T> GetByIdAsync(Guid id)
+    
+    // we may couldn't find the entity with the given id
+    public async Task<T?> GetByIdAsync(Guid id)
     {
+        // check if the id is valid or not to avoid unnecessary database calls or exceptions
         return await _dbSet.FindAsync(id);
     }
 

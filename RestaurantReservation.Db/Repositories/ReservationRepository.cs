@@ -13,6 +13,8 @@ public class ReservationRepository : CRUDRepository<Reservation>, IReservationRe
     
     public async Task<(IEnumerable<Reservation>, int TotalCount)> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize)
     {
+        
+        // add a special service to validate the pagination parameters, since you used it for multiple services
         if (pageNumber < 1 || pageSize < 1)
             throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
 
@@ -29,6 +31,7 @@ public class ReservationRepository : CRUDRepository<Reservation>, IReservationRe
     
     public async Task<(IEnumerable<Order>, int TotalCount)> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize)
     {
+        // add a special service to validate the pagination parameters, since you used it for multiple services
         if (pageNumber < 1 || pageSize < 1)
             throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
 

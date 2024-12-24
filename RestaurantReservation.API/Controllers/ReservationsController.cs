@@ -14,6 +14,8 @@ namespace RestaurantReservation.API.Controllers;
 [Authorize]
 public class ReservationsController : Controller
 {
+    // same as other controller
+
     private readonly IReservationService _reservationService;
 
     public ReservationsController(IReservationService reservationService)
@@ -42,14 +44,14 @@ public class ReservationsController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateReservationDto reservationDto)
+    public async Task<IActionResult> Create(ReservationDto reservationDto)
     {
         var createdReservation = await _reservationService.CreateReservationAsync(reservationDto);
         return CreatedAtAction(nameof(GetById), new { id = createdReservation.ReservationId }, createdReservation);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ReservationDto>> Update(Guid id, UpdateReservationDto reservationDto)
+    public async Task<ActionResult<ReservationDto>> Update(Guid id, ReservationDto reservationDto)
     {
         var updatedReservation = await _reservationService.UpdateReservationAsync(id, reservationDto);
         if (updatedReservation == null) return NotFound();

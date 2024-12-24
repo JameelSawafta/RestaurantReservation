@@ -24,6 +24,9 @@ class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // remove these lines
+        // move this class to the API project
+        
         // string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..");
         // basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
         // builder.Configuration

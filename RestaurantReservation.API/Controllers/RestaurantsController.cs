@@ -13,6 +13,8 @@ namespace RestaurantReservation.API.Controllers;
 [Authorize]
 public class RestaurantsController : Controller
 {
+    // same as other controller
+
     private readonly IRestaurantService _restaurantService;
 
     public RestaurantsController(IRestaurantService restaurantService)
