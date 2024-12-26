@@ -33,6 +33,17 @@ class Program
         //     .SetBasePath(basePath)
         //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         //     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+        
+        /*
+         
+         this should read the configurations from the appsettings.json file
+        /// <summary>
+        /// Gets current configuration for the app
+        /// </summary>
+        public IConfiguration Configuration { get; }
+        
+        var appConfiguration = this.Configuration.Get<ApplicationConfiguration>();
+         */
            
         
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

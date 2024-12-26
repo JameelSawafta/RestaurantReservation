@@ -15,13 +15,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/AuthenticationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/AuthenticationController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/CustomersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/EmployeesController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/MenuItemsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/MenuItemsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrderItemsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrderItemsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrdersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/OrdersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/ReservationsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/RestaurantsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/RestaurantsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/TablesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.API/Controllers/TablesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/CRUDRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Db/Repositories/CRUDRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/ICustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Interfaces/Services/ICustomerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/CustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.Domain/Services/CustomerService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,23 +29,29 @@
     <option name="autoShow" value="false" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "AlaaImadSaqa"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;AlaaImadSaqa&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/JameelSawafta/RestaurantReservation.git",
-    "accountId": "ca8f4534-9b19-40e0-9e96-c45b6d30439e"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/JameelSawafta/RestaurantReservation.git&quot;,
+    &quot;accountId&quot;: &quot;ca8f4534-9b19-40e0-9e96-c45b6d30439e&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock://D:/Training/RestaurantReservation/RestaurantReservation.API/Controllers/AuthenticationController.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -63,22 +66,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor": "Run",
-    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor": "Run",
-    ".NET Project.RestaurantReservation.CompositionRoot.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.RestaurantReservation.CompositionRoot.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Alaa-Review&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https">
     <configuration name="RestaurantReservation.CompositionRoot" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -162,13 +165,25 @@
       <workItem from="1733656253716" duration="17255000" />
       <workItem from="1733740817580" duration="32497000" />
       <workItem from="1733825400461" duration="959000" />
-      <workItem from="1735067833664" duration="1381000" />
+      <workItem from="1735067833664" duration="2731000" />
+      <workItem from="1735070687636" duration="98000" />
+      <workItem from="1735210852955" duration="2645000" />
     </task>
+    <task id="LOCAL-00001" summary="Review Comments">
+      <option name="closed" value="true" />
+      <created>1735070583427</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1735070583427</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -183,5 +198,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Review Comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Review Comments" />
   </component>
 </project>

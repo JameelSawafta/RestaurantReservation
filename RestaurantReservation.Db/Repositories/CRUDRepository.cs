@@ -34,6 +34,7 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
     // we may couldn't find the entity with the given id
     public async Task<T?> GetByIdAsync(Guid id)
     {
+        if (id == Guid.Empty) return null;
         // check if the id is valid or not to avoid unnecessary database calls or exceptions
         return await _dbSet.FindAsync(id);
     }

@@ -45,7 +45,7 @@ public class CustomersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCustomerDto customerDto)
+    public async Task<IActionResult> Create(CustomerDto customerDto)
     {
         var createdCustomer = await _customerService.CreateCustomerAsync(customerDto);
         // why?

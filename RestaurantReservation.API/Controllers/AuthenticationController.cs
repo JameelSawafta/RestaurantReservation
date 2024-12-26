@@ -47,7 +47,7 @@ public class AuthenticationController : Controller
     }
     
     
-    [HttpPost("authenticate")] // it will be /api/authentication/authenticate I prefer keep it post only
+    [HttpPost("authenticate")] // it will be /api/authentication I prefer keep it post only
     public ActionResult<string> Authenticate(AuthenticationRequestBody authenticationRequestBody)
     {
         
