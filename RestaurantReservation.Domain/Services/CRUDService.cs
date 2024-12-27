@@ -20,7 +20,6 @@ public class CRUDService<T,TDto> : ICRUDService<TDto> where T : class
     {
         var (items, totalItemCount) = await _repository.GetAllAsync(pageNumber, pageSize);
 
-
         var pageData = new PageData(totalItemCount, pageSize, pageNumber);
         var dtos = _mapper.Map<IEnumerable<TDto>>(items);
 
