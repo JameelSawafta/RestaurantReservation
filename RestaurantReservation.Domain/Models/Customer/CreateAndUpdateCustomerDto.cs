@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Domain.Models.Customer;
 
-public class CreateCustomerDto
+public class CreateAndUpdateCustomerDto
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }

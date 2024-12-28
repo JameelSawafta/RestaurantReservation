@@ -5,7 +5,7 @@ using RestaurantReservation.Domain.Models;
 
 namespace RestaurantReservation.Domain.Services;
 
-public class CRUDService<T,TDto> : ICRUDService<TDto> where T : class
+public class CRUDService<T,TDto,CreateAndUpdateTDto> : ICRUDService<TDto,CreateAndUpdateTDto> where T : class
 {
     protected readonly ICRUDRepository<T> _repository;
     protected readonly IMapper _mapper;
@@ -39,16 +39,21 @@ public class CRUDService<T,TDto> : ICRUDService<TDto> where T : class
         return _mapper.Map<TDto>(entity);
     }
 
-    public async Task<TDto> CreateAsync(TDto dto)
+    public async Task<TDto> CreateAsync(CreateAndUpdateTDto dto)
     {
         var entity = _mapper.Map<T>(dto);
         var createdEntity = await _repository.CreateAsync(entity);
         return _mapper.Map<TDto>(createdEntity);
     }
+    
 
-    public async Task<TDto> UpdateAsync(Guid id, TDto dto)
+    public async Task<TDto> UpdateAsync(Guid id, CreateAndUpdateTDto dto)
     {
         var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException($"{typeof(T).Name} with ID {id} not found.");
+        }
         _mapper.Map(dto, entity);
         var updatedEntity = await _repository.UpdateAsync(entity);
         return _mapper.Map<TDto>(updatedEntity);

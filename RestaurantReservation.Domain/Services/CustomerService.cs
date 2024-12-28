@@ -7,7 +7,7 @@ using RestaurantReservation.Domain.Models.Customer;
 
 namespace RestaurantReservation.Domain.Services;
 
-public class CustomerService : CRUDService<Customer,CustomerDto>, ICustomerService
+public class CustomerService : CRUDService<Customer,CustomerDto,CreateAndUpdateCustomerDto>, ICustomerService
 {
     public CustomerService(ICRUDRepository<Customer> repository, IMapper mapper) : base(repository, mapper)
     {

@@ -35,14 +35,14 @@ public class CustomersController : Controller
     }
 
     [HttpPost]
-    public async Task<CustomerDto> Create(CustomerDto customerDto)
+    public async Task<CustomerDto> Create(CreateAndUpdateCustomerDto customerDto)
     {
         var createdCustomer = await _customerService.CreateAsync(customerDto);
         return createdCustomer;
     }
 
     [HttpPut("{id}")]
-    public async Task<CustomerDto> Update(Guid id, CustomerDto customerDto)
+    public async Task<CustomerDto> Update(Guid id, CreateAndUpdateCustomerDto customerDto)
     {
         var updatedCustomer = await _customerService.UpdateAsync(id, customerDto);
         return updatedCustomer;
