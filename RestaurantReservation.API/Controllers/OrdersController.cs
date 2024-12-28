@@ -21,44 +21,37 @@ public class OrdersController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<OrderDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<OrderDto>> GetAll(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedOrders = await _orderService.GetAllOrdersAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedOrders);
+        var paginatedOrders = await _orderService.GetAllAsync(pageNumber, pageSize);
+        return paginatedOrders;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<OrderDto>> GetById(Guid id)
+    public async Task<OrderDto> GetById(Guid id)
     {
-        var order = await _orderService.GetOrderByIdAsync(id);
-        if (order == null) return NotFound();
-        return Ok(order);
+        var order = await _orderService.GetByIdAsync(id);
+        return order;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateOrderDto orderDto)
+    public async Task<OrderDto> Create(CreateAndUpdateOrderDto orderDto)
     {
-        var createdOrder = await _orderService.CreateOrderAsync(orderDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdOrder.OrderId }, createdOrder);
+        var createdOrder = await _orderService.CreateAsync(orderDto);
+        return createdOrder;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<OrderDto>> Update(Guid id, UpdateOrderDto orderDto)
+    public async Task<OrderDto> Update(Guid id, CreateAndUpdateOrderDto orderDto)
     {
-        var updatedOrder = await _orderService.UpdateOrderAsync(id, orderDto);
-        if (updatedOrder == null) return NotFound();
-        return Ok(updatedOrder);
+        var updatedOrder = await _orderService.UpdateAsync(id, orderDto);
+        return updatedOrder;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _orderService.DeleteOrderAsync(id);
+        var success = await _orderService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
     }
