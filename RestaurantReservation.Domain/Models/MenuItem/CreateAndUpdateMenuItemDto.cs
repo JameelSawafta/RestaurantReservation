@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Domain.Models.MenuItem;
 
-public class CreateMenuItemDto
+public class CreateAndUpdateMenuItemDto
 {
     public string Name { get; set; }
     public string Description { get; set; }

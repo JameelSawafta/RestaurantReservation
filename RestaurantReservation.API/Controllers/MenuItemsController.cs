@@ -21,44 +21,37 @@ public class MenuItemsController : Controller
     }
     
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<MenuItemDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<MenuItemDto>> GetAll(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedMenuItems = await _menuItemService.GetAllMenuItemsAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedMenuItems);
+        var paginatedMenuItem = await _menuItemService.GetAllAsync(pageNumber, pageSize);
+        return paginatedMenuItem;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MenuItemDto>> GetById(Guid id)
+    public async Task<MenuItemDto> GetById(Guid id)
     {
-        var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
-        if (menuItem == null) return NotFound();
-        return Ok(menuItem);
+        var menuItem = await _menuItemService.GetByIdAsync(id);
+        return menuItem;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateMenuItemDto menuItemDto)
+    public async Task<MenuItemDto> Create(CreateAndUpdateMenuItemDto menuItemDto)
     {
-        var createdMenuItem = await _menuItemService.CreateMenuItemAsync(menuItemDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdMenuItem.ItemId }, createdMenuItem);
+        var createdMenuItem = await _menuItemService.CreateAsync(menuItemDto);
+        return createdMenuItem;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<MenuItemDto>> Update(Guid id, UpdateMenuItemDto menuItemDto)
+    public async Task<MenuItemDto> Update(Guid id, CreateAndUpdateMenuItemDto menuItemDto)
     {
-        var updatedMenuItem = await _menuItemService.UpdateMenuItemAsync(id, menuItemDto);
-        if (updatedMenuItem == null) return NotFound();
-        return Ok(updatedMenuItem);
+        var updatedMenuItem = await _menuItemService.UpdateAsync(id, menuItemDto);
+        return updatedMenuItem;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _menuItemService.DeleteMenuItemAsync(id);
+        var success = await _menuItemService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
     }

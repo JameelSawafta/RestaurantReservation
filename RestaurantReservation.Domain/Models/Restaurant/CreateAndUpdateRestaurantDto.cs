@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Domain.Models.Restaurant;
 
-public class UpdateRestaurantDto
+public class CreateAndUpdateRestaurantDto
 {
     public string Name { get; set; }
     public string Address { get; set; }

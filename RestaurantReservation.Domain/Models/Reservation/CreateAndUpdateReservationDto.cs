@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Domain.Models.Reservation;
 
-public class UpdateReservationDto
+public class CreateAndUpdateReservationDto
 {
     public Guid CustomerId { get; set; }
     public Guid RestaurantId { get; set; }

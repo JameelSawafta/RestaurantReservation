@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Domain.Models.OrderItem;
 
-public class CreateOrderItemDto
+public class CreateAndUpdateOrderItemDto
 {
     public Guid OrderId { get; set; }
     public Guid ItemId { get; set; }

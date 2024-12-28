@@ -8,8 +8,7 @@ public class MenuItemMappingProfile : Profile
 {
     public MenuItemMappingProfile()
     {
-        CreateMap<MenuItem, MenuItemDto>();
-        CreateMap<CreateMenuItemDto, MenuItem>();
-        CreateMap<UpdateMenuItemDto, MenuItem>();
+        CreateMap<MenuItem, MenuItemDto>().ReverseMap();
+        CreateMap<CreateAndUpdateMenuItemDto, MenuItem>();
     }
 }
