@@ -21,44 +21,37 @@ public class RestaurantsController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<RestaurantDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<RestaurantDto>> GetAll(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedRestaurants = await _restaurantService.GetAllRestaurantsAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedRestaurants);
+        var paginatedRestaurants = await _restaurantService.GetAllAsync(pageNumber, pageSize);
+        return paginatedRestaurants;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<RestaurantDto>> GetById(Guid id)
+    public async Task<RestaurantDto> GetById(Guid id)
     {
-        var restaurant = await _restaurantService.GetRestaurantByIdAsync(id);
-        if (restaurant == null) return NotFound();
-        return Ok(restaurant);
+        var restaurant = await _restaurantService.GetByIdAsync(id);
+        return restaurant;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateRestaurantDto restaurantDto)
+    public async Task<RestaurantDto> Create(CreateAndUpdateRestaurantDto restaurantDto)
     {
-        var createdRestaurant = await _restaurantService.CreateRestaurantAsync(restaurantDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdRestaurant.RestaurantId }, createdRestaurant);
+        var createdRestaurant = await _restaurantService.CreateAsync(restaurantDto);
+        return createdRestaurant;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<RestaurantDto>> Update(Guid id, UpdateRestaurantDto restaurantDto)
+    public async Task<RestaurantDto> Update(Guid id, CreateAndUpdateRestaurantDto restaurantDto)
     {
-        var updatedRestaurant = await _restaurantService.UpdateRestaurantAsync(id, restaurantDto);
-        if (updatedRestaurant == null) return NotFound();
-        return Ok(updatedRestaurant);
+        var updatedRestaurant = await _restaurantService.UpdateAsync(id, restaurantDto);
+        return updatedRestaurant;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _restaurantService.DeleteRestaurantAsync(id);
+        var success = await _restaurantService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
     }
