@@ -12,6 +12,7 @@ using RestaurantReservation.Db.DbContext;
 using RestaurantReservation.Db.Repositories;
 using RestaurantReservation.Domain.Interfaces.Repositories;
 using RestaurantReservation.Domain.Interfaces.Services;
+using RestaurantReservation.Domain.Middlewares;
 using RestaurantReservation.Domain.Profiles;
 using RestaurantReservation.Domain.Services;
 
@@ -87,6 +88,10 @@ class Program
         builder.Services.AddDbContext<RestaurantReservationDbContext>(
             dbContext => dbContext.UseNpgsql(builder.Configuration["ConnectionStrings:constr"]));
         
+        builder.Services.AddScoped(typeof(ICRUDRepository<>), typeof(CRUDRepository<>));
+        
+        builder.Services.AddScoped<PaginationService>();
+        
         builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
         builder.Services.AddScoped<ICustomerService, CustomerService>();
         
@@ -128,7 +133,9 @@ class Program
         );
         
         var app = builder.Build();
-
+        
+        app.UseMiddleware<CustomExceptionHandlingMiddleware>();
+        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
