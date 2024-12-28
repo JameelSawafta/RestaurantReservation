@@ -8,8 +8,7 @@ public class TableMappingProfile : Profile
 {
     public TableMappingProfile()
     {
-        CreateMap<Table, TableDto>();
-        CreateMap<CreateTableDto, Table>();
-        CreateMap<UpdateTableDto, Table>();
+        CreateMap<Table, TableDto>().ReverseMap();
+        CreateMap<CreateAndUpdateTableDto, Table>();
     }
 }

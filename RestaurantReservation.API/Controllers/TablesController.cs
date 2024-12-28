@@ -21,44 +21,37 @@ public class TablesController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<TableDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<TableDto>> GetAll(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedTables = await _tableService.GetAllTablesAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedTables);
+        var paginatedTables = await _tableService.GetAllAsync(pageNumber, pageSize);
+        return paginatedTables;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TableDto>> GetById(Guid id)
+    public async Task<TableDto> GetById(Guid id)
     {
-        var table = await _tableService.GetTableByIdAsync(id);
-        if (table == null) return NotFound();
-        return Ok(table);
+        var table = await _tableService.GetByIdAsync(id);
+        return table;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateTableDto tableDto)
+    public async Task<TableDto> Create(CreateAndUpdateTableDto tableDto)
     {
-        var createdTable = await _tableService.CreateTableAsync(tableDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdTable.TableId }, createdTable);
+        var createdTable = await _tableService.CreateAsync(tableDto);
+        return createdTable;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<TableDto>> Update(Guid id, UpdateTableDto tableDto)
+    public async Task<TableDto> Update(Guid id, CreateAndUpdateTableDto tableDto)
     {
-        var updatedTable = await _tableService.UpdateTableAsync(id, tableDto);
-        if (updatedTable == null) return NotFound();
-        return Ok(updatedTable);
+        var updatedTable = await _tableService.UpdateAsync(id, tableDto);
+        return updatedTable;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _tableService.DeleteTableAsync(id);
+        var success = await _tableService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
     }
