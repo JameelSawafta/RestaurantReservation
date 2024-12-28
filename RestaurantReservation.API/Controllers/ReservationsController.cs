@@ -22,69 +22,52 @@ public class ReservationsController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<ReservationDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<ReservationDto>> GetAll(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedReservations = await _reservationService.GetAllReservationsAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedReservations);
+       var paginatedReservations = await _reservationService.GetAllAsync(pageNumber, pageSize);
+        return paginatedReservations;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ReservationDto>> GetById(Guid id)
+    public async Task<ReservationDto> GetById(Guid id)
     {
-        var reservation = await _reservationService.GetReservationByIdAsync(id);
-        if (reservation == null) return NotFound();
-        return Ok(reservation);
+        var reservation = await _reservationService.GetByIdAsync(id);
+        return reservation;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateReservationDto reservationDto)
+    public async Task<ReservationDto> Create(CreateAndUpdateReservationDto reservationDto)
     {
-        var createdReservation = await _reservationService.CreateReservationAsync(reservationDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdReservation.ReservationId }, createdReservation);
+        var createdReservation = await _reservationService.CreateAsync(reservationDto);
+        return createdReservation;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ReservationDto>> Update(Guid id, UpdateReservationDto reservationDto)
+    public async Task<ReservationDto> Update(Guid id, CreateAndUpdateReservationDto reservationDto)
     {
-        var updatedReservation = await _reservationService.UpdateReservationAsync(id, reservationDto);
-        if (updatedReservation == null) return NotFound();
-        return Ok(updatedReservation);
+        var updatedReservation = await _reservationService.UpdateAsync(id, reservationDto);
+        return updatedReservation;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _reservationService.DeleteReservationAsync(id);
+        var success = await _reservationService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
-    }
+    }   
     
     [HttpGet("customer/{customerId}")]
-    public async Task<ActionResult<PaginatedList<ReservationDto>>> GetReservationsbycustomerId(Guid customerId,int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<ReservationDto>> GetReservationsbycustomerId(Guid customerId,int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedManagers = await _reservationService.GetReservationsByCustomerIdAsync(customerId,pageNumber, pageSize, baseUrl);
-        return Ok(paginatedManagers);
+        var paginatedReservation = await _reservationService.GetReservationsByCustomerIdAsync(customerId,pageNumber, pageSize);
+        return paginatedReservation;
     }
     
     [HttpGet("{reservationId}/orders")]
-    public async Task<ActionResult<PaginatedList<DetailedOrderDto>>> GetOrdersByReservationId(Guid reservationId, int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationId(Guid reservationId, int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedOrders = await _reservationService.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize, baseUrl);
-        return Ok(paginatedOrders);
+        var paginatedOrders = await _reservationService.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize);
+        return paginatedOrders;
     }
 }

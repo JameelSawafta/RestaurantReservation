@@ -4,14 +4,8 @@ using RestaurantReservation.Domain.Models.Reservation;
 
 namespace RestaurantReservation.Domain.Interfaces.Services;
 
-public interface IReservationService
+public interface IReservationService : ICRUDService<ReservationDto,CreateAndUpdateReservationDto>
 {
-    Task<PaginatedList<ReservationDto>> GetAllReservationsAsync(int pageNumber, int pageSize, string baseUrl);
-    Task<ReservationDto> GetReservationByIdAsync(Guid reservationId);
-    Task<ReservationDto> CreateReservationAsync(CreateReservationDto reservationDto);
-    Task<ReservationDto> UpdateReservationAsync(Guid reservationId, UpdateReservationDto reservationDto);
-    Task<bool> DeleteReservationAsync(Guid reservationId);
-    
-    Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize, string baseUrl);
-    Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize, string baseUrl);
+    Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize);
+    Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize);
 }

@@ -8,8 +8,7 @@ public class ReservationMappingProfile : Profile
 {
     public ReservationMappingProfile()
     {
-        CreateMap<Reservation, ReservationDto>(); 
-        CreateMap<CreateReservationDto, Reservation>();
-        CreateMap<UpdateReservationDto, Reservation>();
+        CreateMap<Reservation, ReservationDto>().ReverseMap(); 
+        CreateMap<CreateAndUpdateReservationDto, Reservation>();
     }
 }
