@@ -21,68 +21,57 @@ public class EmployeesController : Controller
     }
     
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<EmployeeDto>> GetAll(int pageNumber = 1, int pageSize = 10)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
+        
 
         string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
 
-        var paginatedEmployees = await _employeeService.GetAllEmployeesAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedEmployees);
+        var paginatedEmployees = await _employeeService.GetAllAsync(pageNumber, pageSize);
+        return paginatedEmployees;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<EmployeeDto>> GetById(Guid id)
+    public async Task<EmployeeDto> GetById(Guid id)
     {
-        var employee = await _employeeService.GetEmployeeByIdAsync(id);
-        if (employee == null) return NotFound();
-        return Ok(employee);
+        var employee = await _employeeService.GetByIdAsync(id);
+        return employee;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateEmployeeDto employeeDto)
+    public async Task<EmployeeDto> Create(CreateAndUpdateEmployeeDto employeeDto)
     {
-        var createdEmployee = await _employeeService.CreateEmployeeAsync(employeeDto);
-        return CreatedAtAction(nameof(GetById), new { id = createdEmployee.EmployeeId }, createdEmployee);
+        var createdEmployee = await _employeeService.CreateAsync(employeeDto);
+        return createdEmployee;
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<EmployeeDto>> Update(Guid id, UpdateEmployeeDto employeeDto)
+    public async Task<EmployeeDto> Update(Guid id, CreateAndUpdateEmployeeDto employeeDto)
     {
-        var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, employeeDto);
-        if (updatedEmployee == null) return NotFound();
-        return Ok(updatedEmployee);
+        var updatedEmployee = await _employeeService.UpdateAsync(id, employeeDto);
+        return updatedEmployee;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _employeeService.DeleteEmployeeAsync(id);
+        var success = await _employeeService.DeleteAsync(id);
         if (!success) return NotFound();
         return NoContent();
     }
     
     [HttpGet("managers")]
-    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAllManagers(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<EmployeeDto>> GetAllManagers(int pageNumber, int pageSize)
     {
-        if (pageNumber < 1 || pageSize < 1)
-            return BadRequest("PageNumber and PageSize must be greater than 0.");
-
-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
-
-        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize, baseUrl);
-        return Ok(paginatedManagers);
+        
+        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize);
+        return paginatedManagers;
     }
     
     [HttpGet("{employeeId}/average-order-amount")]
     public async Task<IActionResult> GetAverageOrderAmountByEmployee(Guid employeeId)
     {
         var averageOrderAmount = await _employeeService.GetAverageOrderAmountByEmployeeAsync(employeeId);
-            
-        if (averageOrderAmount == 0)
-            return NotFound($"No orders found for employee with ID {employeeId}.");
-
         return Ok(new { EmployeeId = employeeId, AverageOrderAmount = averageOrderAmount });
     }
 }
