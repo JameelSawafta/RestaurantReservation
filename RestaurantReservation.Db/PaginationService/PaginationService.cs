@@ -20,6 +20,7 @@ public class PaginationService
         var items = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
+            .AsNoTracking()
             .ToListAsync();
 
         return (items, totalCount);

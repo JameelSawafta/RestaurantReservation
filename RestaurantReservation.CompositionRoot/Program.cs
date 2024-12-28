@@ -24,14 +24,7 @@ class Program
     static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..");
-        // basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
-        // builder.Configuration
-        //     .SetBasePath(basePath)
-        //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        //     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
-           
+        
         
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -87,6 +80,8 @@ class Program
 
         builder.Services.AddDbContext<RestaurantReservationDbContext>(
             dbContext => dbContext.UseNpgsql(builder.Configuration["ConnectionStrings:constr"]));
+        
+        builder.Services.AddScoped<IUserService, UserService>();
         
         builder.Services.AddScoped(typeof(ICRUDRepository<>), typeof(CRUDRepository<>));
         

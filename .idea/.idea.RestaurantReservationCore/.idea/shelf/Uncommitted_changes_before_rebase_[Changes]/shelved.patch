@@ -1,0 +1,711 @@
+Index: RestaurantReservation.Domain/Interfaces/Services/ICRUDService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Domain.Models;\n\nnamespace RestaurantReservation.Domain.Interfaces.Services;\n\npublic interface ICRUDService<TDto>\n{\n    Task<PaginatedList<TDto>> GetAllAsync(int pageNumber, int pageSize);\n    Task<TDto> GetByIdAsync(Guid id);\n    Task<TDto> CreateAsync(TDto createDto);\n    Task<TDto> UpdateAsync(Guid id, TDto updateDto);\n    Task<bool> DeleteAsync(Guid id);\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Interfaces/Services/ICRUDService.cs b/RestaurantReservation.Domain/Interfaces/Services/ICRUDService.cs
+--- a/RestaurantReservation.Domain/Interfaces/Services/ICRUDService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Interfaces/Services/ICRUDService.cs	(date 1735392572464)
+@@ -2,11 +2,11 @@
+ 
+ namespace RestaurantReservation.Domain.Interfaces.Services;
+ 
+-public interface ICRUDService<TDto>
++public interface ICRUDService<TDto,CreateAndUpdateTDto>
+ {
+     Task<PaginatedList<TDto>> GetAllAsync(int pageNumber, int pageSize);
+     Task<TDto> GetByIdAsync(Guid id);
+-    Task<TDto> CreateAsync(TDto createDto);
+-    Task<TDto> UpdateAsync(Guid id, TDto updateDto);
++    Task<TDto> CreateAsync(CreateAndUpdateTDto createDto);
++    Task<TDto> UpdateAsync(Guid id, CreateAndUpdateTDto updateDto);
+     Task<bool> DeleteAsync(Guid id);
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Domain/Services/EmployeeService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Employee;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class EmployeeService : IEmployeeService\n{\n    private readonly IEmployeeRepository _employeeRepository;\n    private readonly IMapper _mapper;\n\n    public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)\n    {\n        _employeeRepository = employeeRepository;\n        _mapper = mapper;\n    }\n    \n    public async Task<PaginatedList<EmployeeDto>> GetAllEmployeesAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (employees, totalItemCount) = await _employeeRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);\n\n        return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);\n    }\n\n    public async Task<EmployeeDto> GetEmployeeByIdAsync(Guid id)\n    {\n        var employee = await _employeeRepository.GetByIdAsync(id);\n        return employee == null ? null : _mapper.Map<EmployeeDto>(employee);\n    }\n\n    public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto employeeDto)\n    {\n        var employee = _mapper.Map<Employee>(employeeDto);\n        var createdEmployee = await _employeeRepository.CreateAsync(employee);\n        return _mapper.Map<EmployeeDto>(createdEmployee);\n    }\n\n    public async Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto)\n    {\n        var employee = await _employeeRepository.GetByIdAsync(id);\n        if (employee == null) return null;\n\n        _mapper.Map(employeeDto, employee);\n        var updatedEmployee = await _employeeRepository.UpdateAsync(employee);\n        return _mapper.Map<EmployeeDto>(updatedEmployee);\n    }\n\n    public async Task<bool> DeleteEmployeeAsync(Guid id)\n    {\n        return await _employeeRepository.DeleteAsync(id);\n    }\n    \n    public async Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (managers, totalItemCount) = await _employeeRepository.GetManagersAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(managers);\n\n        return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);\n    }\n    \n    public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)\n    {\n        return await _employeeRepository.GetAverageOrderAmountByEmployeeAsync(employeeId);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/EmployeeService.cs b/RestaurantReservation.Domain/Services/EmployeeService.cs
+--- a/RestaurantReservation.Domain/Services/EmployeeService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/EmployeeService.cs	(date 1735401752806)
+@@ -7,64 +7,24 @@
+ 
+ namespace RestaurantReservation.Domain.Services;
+ 
+-public class EmployeeService : IEmployeeService
++public class EmployeeService : CRUDService<Employee,EmployeeDto,CreateAndUpdateEmployeeDto>, IEmployeeService
+ {
+     private readonly IEmployeeRepository _employeeRepository;
+-    private readonly IMapper _mapper;
+-
+-    public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
++    
++    public EmployeeService(ICRUDRepository<Employee> repository, IMapper mapper, IEmployeeRepository employeeRepository) : base(repository, mapper)
+     {
+         _employeeRepository = employeeRepository;
+-        _mapper = mapper;
+-    }
+-    
+-    public async Task<PaginatedList<EmployeeDto>> GetAllEmployeesAsync(int pageNumber, int pageSize, string baseUrl)
+-    {
+-        var (employees, totalItemCount) = await _employeeRepository.GetAllAsync(pageNumber, pageSize);
+-
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+-
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
+-        var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+-
+-        return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);
+-    }
+-
+-    public async Task<EmployeeDto> GetEmployeeByIdAsync(Guid id)
+-    {
+-        var employee = await _employeeRepository.GetByIdAsync(id);
+-        return employee == null ? null : _mapper.Map<EmployeeDto>(employee);
+-    }
+-
+-    public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto employeeDto)
+-    {
+-        var employee = _mapper.Map<Employee>(employeeDto);
+-        var createdEmployee = await _employeeRepository.CreateAsync(employee);
+-        return _mapper.Map<EmployeeDto>(createdEmployee);
+     }
+ 
+-    public async Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto)
+-    {
+-        var employee = await _employeeRepository.GetByIdAsync(id);
+-        if (employee == null) return null;
+-
+-        _mapper.Map(employeeDto, employee);
+-        var updatedEmployee = await _employeeRepository.UpdateAsync(employee);
+-        return _mapper.Map<EmployeeDto>(updatedEmployee);
+-    }
+-
+-    public async Task<bool> DeleteEmployeeAsync(Guid id)
+-    {
+-        return await _employeeRepository.DeleteAsync(id);
+-    }
+-    
+-    public async Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl)
++    public async Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize)
+     {
+         var (managers, totalItemCount) = await _employeeRepository.GetManagersAsync(pageNumber, pageSize);
++        if (totalItemCount == 0)
++        {
++            throw new KeyNotFoundException($"{nameof(Employee)} with not data found.");
++        }
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+-
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(managers);
+ 
+         return new PaginatedList<EmployeeDto>(employeeDtos.ToList(), pageData);
+@@ -72,6 +32,9 @@
+     
+     public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)
+     {
+-        return await _employeeRepository.GetAverageOrderAmountByEmployeeAsync(employeeId);
++        var averageOrderAmount = await _employeeRepository.GetAverageOrderAmountByEmployeeAsync(employeeId);
++        if (averageOrderAmount == 0)
++            throw new KeyNotFoundException($"No orders found for employee with ID {employeeId}.");
++        return averageOrderAmount;
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservation.API/Controllers/EmployeesController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Asp.Versioning;\nusing Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Mvc;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Employee;\n\nnamespace RestaurantReservation.API.Controllers;\n\n[ApiController]\n[Route(\"api/employee\")]\n[ApiVersion(\"1.0\")]\n[Authorize]\npublic class EmployeesController : Controller\n{\n    private readonly IEmployeeService _employeeService;\n\n    public EmployeesController(IEmployeeService employeeService)\n    {\n        _employeeService = employeeService;\n    }\n    \n    [HttpGet]\n    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAll(int pageNumber = 1, int pageSize = 10)\n    {\n        if (pageNumber < 1 || pageSize < 1)\n            return BadRequest(\"PageNumber and PageSize must be greater than 0.\");\n\n        string baseUrl = $\"{Request.Scheme}://{Request.Host}{Request.Path}\";\n\n        var paginatedEmployees = await _employeeService.GetAllEmployeesAsync(pageNumber, pageSize, baseUrl);\n        return Ok(paginatedEmployees);\n    }\n\n    [HttpGet(\"{id}\")]\n    public async Task<ActionResult<EmployeeDto>> GetById(Guid id)\n    {\n        var employee = await _employeeService.GetEmployeeByIdAsync(id);\n        if (employee == null) return NotFound();\n        return Ok(employee);\n    }\n\n    [HttpPost]\n    public async Task<IActionResult> Create(CreateEmployeeDto employeeDto)\n    {\n        var createdEmployee = await _employeeService.CreateEmployeeAsync(employeeDto);\n        return CreatedAtAction(nameof(GetById), new { id = createdEmployee.EmployeeId }, createdEmployee);\n    }\n\n    [HttpPut(\"{id}\")]\n    public async Task<ActionResult<EmployeeDto>> Update(Guid id, UpdateEmployeeDto employeeDto)\n    {\n        var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, employeeDto);\n        if (updatedEmployee == null) return NotFound();\n        return Ok(updatedEmployee);\n    }\n\n    [HttpDelete(\"{id}\")]\n    public async Task<IActionResult> Delete(Guid id)\n    {\n        var success = await _employeeService.DeleteEmployeeAsync(id);\n        if (!success) return NotFound();\n        return NoContent();\n    }\n    \n    [HttpGet(\"managers\")]\n    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAllManagers(int pageNumber = 1, int pageSize = 10)\n    {\n        if (pageNumber < 1 || pageSize < 1)\n            return BadRequest(\"PageNumber and PageSize must be greater than 0.\");\n\n        string baseUrl = $\"{Request.Scheme}://{Request.Host}{Request.Path}\";\n\n        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize, baseUrl);\n        return Ok(paginatedManagers);\n    }\n    \n    [HttpGet(\"{employeeId}/average-order-amount\")]\n    public async Task<IActionResult> GetAverageOrderAmountByEmployee(Guid employeeId)\n    {\n        var averageOrderAmount = await _employeeService.GetAverageOrderAmountByEmployeeAsync(employeeId);\n            \n        if (averageOrderAmount == 0)\n            return NotFound($\"No orders found for employee with ID {employeeId}.\");\n\n        return Ok(new { EmployeeId = employeeId, AverageOrderAmount = averageOrderAmount });\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.API/Controllers/EmployeesController.cs b/RestaurantReservation.API/Controllers/EmployeesController.cs
+--- a/RestaurantReservation.API/Controllers/EmployeesController.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.API/Controllers/EmployeesController.cs	(date 1735401752656)
+@@ -21,68 +21,57 @@
+     }
+     
+     [HttpGet]
+-    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAll(int pageNumber = 1, int pageSize = 10)
++    public async Task<PaginatedList<EmployeeDto>> GetAll(int pageNumber = 1, int pageSize = 10)
+     {
+-        if (pageNumber < 1 || pageSize < 1)
+-            return BadRequest("PageNumber and PageSize must be greater than 0.");
++        
+ 
+         string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+ 
+-        var paginatedEmployees = await _employeeService.GetAllEmployeesAsync(pageNumber, pageSize, baseUrl);
+-        return Ok(paginatedEmployees);
++        var paginatedEmployees = await _employeeService.GetAllAsync(pageNumber, pageSize);
++        return paginatedEmployees;
+     }
+ 
+     [HttpGet("{id}")]
+-    public async Task<ActionResult<EmployeeDto>> GetById(Guid id)
++    public async Task<EmployeeDto> GetById(Guid id)
+     {
+-        var employee = await _employeeService.GetEmployeeByIdAsync(id);
+-        if (employee == null) return NotFound();
+-        return Ok(employee);
++        var employee = await _employeeService.GetByIdAsync(id);
++        return employee;
+     }
+ 
+     [HttpPost]
+-    public async Task<IActionResult> Create(CreateEmployeeDto employeeDto)
++    public async Task<EmployeeDto> Create(CreateAndUpdateEmployeeDto employeeDto)
+     {
+-        var createdEmployee = await _employeeService.CreateEmployeeAsync(employeeDto);
+-        return CreatedAtAction(nameof(GetById), new { id = createdEmployee.EmployeeId }, createdEmployee);
++        var createdEmployee = await _employeeService.CreateAsync(employeeDto);
++        return createdEmployee;
+     }
+ 
+     [HttpPut("{id}")]
+-    public async Task<ActionResult<EmployeeDto>> Update(Guid id, UpdateEmployeeDto employeeDto)
++    public async Task<EmployeeDto> Update(Guid id, CreateAndUpdateEmployeeDto employeeDto)
+     {
+-        var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, employeeDto);
+-        if (updatedEmployee == null) return NotFound();
+-        return Ok(updatedEmployee);
++        var updatedEmployee = await _employeeService.UpdateAsync(id, employeeDto);
++        return updatedEmployee;
+     }
+ 
+     [HttpDelete("{id}")]
+     public async Task<IActionResult> Delete(Guid id)
+     {
+-        var success = await _employeeService.DeleteEmployeeAsync(id);
++        var success = await _employeeService.DeleteAsync(id);
+         if (!success) return NotFound();
+         return NoContent();
+     }
+     
+     [HttpGet("managers")]
+-    public async Task<ActionResult<PaginatedList<EmployeeDto>>> GetAllManagers(int pageNumber = 1, int pageSize = 10)
++    public async Task<PaginatedList<EmployeeDto>> GetAllManagers(int pageNumber, int pageSize)
+     {
+-        if (pageNumber < 1 || pageSize < 1)
+-            return BadRequest("PageNumber and PageSize must be greater than 0.");
+-
+-        string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+-
+-        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize, baseUrl);
+-        return Ok(paginatedManagers);
++        
++        var paginatedManagers = await _employeeService.GetManagersAsync(pageNumber, pageSize);
++        return paginatedManagers;
+     }
+     
+     [HttpGet("{employeeId}/average-order-amount")]
+     public async Task<IActionResult> GetAverageOrderAmountByEmployee(Guid employeeId)
+     {
+         var averageOrderAmount = await _employeeService.GetAverageOrderAmountByEmployeeAsync(employeeId);
+-            
+-        if (averageOrderAmount == 0)
+-            return NotFound($"No orders found for employee with ID {employeeId}.");
+-
+         return Ok(new { EmployeeId = employeeId, AverageOrderAmount = averageOrderAmount });
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Domain/Services/OrderItemService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.OrderItem;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class OrderItemService : IOrderItemService\n{\n    private readonly IOrderItemRepository _orderItemRepository;\n    private readonly IMapper _mapper;\n\n    public OrderItemService(IOrderItemRepository orderItemRepository, IMapper mapper)\n    {\n        _orderItemRepository = orderItemRepository;\n        _mapper = mapper;\n    }\n\n    public async Task<PaginatedList<OrderItemDto>> GetAllOrderItemsAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (orderItems, totalItemCount) = await _orderItemRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var orderItemDtos = _mapper.Map<IEnumerable<OrderItemDto>>(orderItems);\n\n        return new PaginatedList<OrderItemDto>(orderItemDtos.ToList(), pageData);\n    }\n\n    public async Task<OrderItemDto> GetOrderItemByIdAsync(Guid orderItemId)\n    {\n        var orderItem = await _orderItemRepository.GetByIdAsync(orderItemId);\n        return orderItem == null ? null : _mapper.Map<OrderItemDto>(orderItem);\n    }\n\n    public async Task<OrderItemDto> CreateOrderItemAsync(CreateOrderItemDto orderItemDto)\n    {\n        var orderItem = _mapper.Map<OrderItem>(orderItemDto);\n        var createdOrderItem = await _orderItemRepository.CreateAsync(orderItem);\n        return _mapper.Map<OrderItemDto>(createdOrderItem);\n    }\n\n    public async Task<OrderItemDto> UpdateOrderItemAsync(Guid orderItemId, UpdateOrderItemDto orderItemDto)\n    {\n        var orderItem = await _orderItemRepository.GetByIdAsync(orderItemId);\n        if (orderItem == null) return null;\n\n        _mapper.Map(orderItemDto, orderItem);\n        var updatedOrderItem = await _orderItemRepository.UpdateAsync(orderItem);\n        return _mapper.Map<OrderItemDto>(updatedOrderItem);\n    }\n\n    public async Task<bool> DeleteOrderItemAsync(Guid orderItemId)\n    {\n        return await _orderItemRepository.DeleteAsync(orderItemId);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/OrderItemService.cs b/RestaurantReservation.Domain/Services/OrderItemService.cs
+--- a/RestaurantReservation.Domain/Services/OrderItemService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/OrderItemService.cs	(date 1735327475402)
+@@ -22,9 +22,8 @@
+     {
+         var (orderItems, totalItemCount) = await _orderItemRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var orderItemDtos = _mapper.Map<IEnumerable<OrderItemDto>>(orderItems);
+ 
+         return new PaginatedList<OrderItemDto>(orderItemDtos.ToList(), pageData);
+Index: RestaurantReservation.Domain/Services/RestaurantService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Restaurant;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class RestaurantService : IRestaurantService\n{\n    \n    private readonly IRestaurantRepository _restaurantRepository;\n    private readonly IMapper _mapper;\n\n    public RestaurantService(IRestaurantRepository restaurantRepository, IMapper mapper)\n    {\n        _restaurantRepository = restaurantRepository;\n        _mapper = mapper;\n    }\n    \n    public async Task<PaginatedList<RestaurantDto>> GetAllRestaurantsAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (restaurants, totalItemCount) = await _restaurantRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n\n        var restaurantDtos = _mapper.Map<IEnumerable<RestaurantDto>>(restaurants);\n\n        return new PaginatedList<RestaurantDto>(restaurantDtos.ToList(), pageData);\n    }\n\n    public async Task<RestaurantDto> GetRestaurantByIdAsync(Guid id)\n    {\n        var restaurant = await _restaurantRepository.GetByIdAsync(id);\n        return _mapper.Map<RestaurantDto>(restaurant);\n    }\n\n    public async Task<RestaurantDto> CreateRestaurantAsync(CreateRestaurantDto restaurantDto)\n    {\n        var restaurant = _mapper.Map<Restaurant>(restaurantDto);\n        var createdRestaurant = await _restaurantRepository.CreateAsync(restaurant);\n        return _mapper.Map<RestaurantDto>(createdRestaurant);\n    }\n\n    public async Task<RestaurantDto> UpdateRestaurantAsync(Guid id, UpdateRestaurantDto restaurantDto)\n    {\n        var restaurant = await _restaurantRepository.GetByIdAsync(id);\n        if (restaurant == null) return null;\n\n        _mapper.Map(restaurantDto, restaurant);\n        var updatedRestaurant = await _restaurantRepository.UpdateAsync(restaurant);\n        return _mapper.Map<RestaurantDto>(updatedRestaurant);\n    }\n\n    public async Task<bool> DeleteRestaurantAsync(Guid id)\n    {\n        return await _restaurantRepository.DeleteAsync(id);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/RestaurantService.cs b/RestaurantReservation.Domain/Services/RestaurantService.cs
+--- a/RestaurantReservation.Domain/Services/RestaurantService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/RestaurantService.cs	(date 1735327475073)
+@@ -23,9 +23,8 @@
+     {
+         var (restaurants, totalItemCount) = await _restaurantRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+ 
+         var restaurantDtos = _mapper.Map<IEnumerable<RestaurantDto>>(restaurants);
+ 
+Index: RestaurantReservation.Db/Repositories/MenuItemRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class MenuItemRepository : CRUDRepository<MenuItem>, IMenuItemRepository\n{\n    public MenuItemRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/MenuItemRepository.cs b/RestaurantReservation.Db/Repositories/MenuItemRepository.cs
+--- a/RestaurantReservation.Db/Repositories/MenuItemRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/MenuItemRepository.cs	(date 1735325616425)
+@@ -1,12 +1,13 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class MenuItemRepository : CRUDRepository<MenuItem>, IMenuItemRepository
+ {
+-    public MenuItemRepository(RestaurantReservationDbContext context) : base(context)
++    public MenuItemRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservationCore.sln.DotSettings.user
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><wpf:ResourceDictionary xml:space=\"preserve\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:s=\"clr-namespace:System;assembly=mscorlib\" xmlns:ss=\"urn:shemas-jetbrains-com:settings-storage-xaml\" xmlns:wpf=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\n\t<s:String x:Key=\"/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AApiVersion_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FSourcesCache_003Ffd835a55676976b3933e80134c6e68587569c6383717d386e32295d11fcf3f_003FApiVersion_002Ecs/@EntryIndexedValue\">ForceIncluded</s:String>\n\t<s:String x:Key=\"/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADirectory_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F9191eac31f284a10b284fabb9f96c4bcc2d600_003F94_003Ff95d1264_003FDirectory_002Ecs/@EntryIndexedValue\">ForceIncluded</s:String>\n\t<s:String x:Key=\"/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AHttpRequest_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FSourcesCache_003Fb34eef3a22e5b353fa75af531b179226d42b88d39fbefa3f0d8d4372def62a3_003FHttpRequest_002Ecs/@EntryIndexedValue\">ForceIncluded</s:String></wpf:ResourceDictionary>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservationCore.sln.DotSettings.user b/RestaurantReservationCore.sln.DotSettings.user
+--- a/RestaurantReservationCore.sln.DotSettings.user	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservationCore.sln.DotSettings.user	(date 1735335168576)
+@@ -1,4 +1,5 @@
+ <wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+ 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AApiVersion_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FSourcesCache_003Ffd835a55676976b3933e80134c6e68587569c6383717d386e32295d11fcf3f_003FApiVersion_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
++	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADbSet_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FSourcesCache_003F4b21fc3f8a3abb5d25f06c622276fbec0fd3932f169cc6af520bf5abc6a46b4_003FDbSet_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+ 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADirectory_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F9191eac31f284a10b284fabb9f96c4bcc2d600_003F94_003Ff95d1264_003FDirectory_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+ 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AHttpRequest_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2024_002E2_003Fresharper_002Dhost_003FSourcesCache_003Fb34eef3a22e5b353fa75af531b179226d42b88d39fbefa3f0d8d4372def62a3_003FHttpRequest_002Ecs/@EntryIndexedValue">ForceIncluded</s:String></wpf:ResourceDictionary>
+\ No newline at end of file
+Index: RestaurantReservation.Domain/Services/MenuItemService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.MenuItem;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class MenuItemService : IMenuItemService\n{\n    private readonly IMenuItemRepository _menuItemRepository;\n    private readonly IMapper _mapper;\n\n    public MenuItemService(IMenuItemRepository menuItemRepository, IMapper mapper)\n    {\n        _menuItemRepository = menuItemRepository;\n        _mapper = mapper;\n    }\n    \n    public async Task<PaginatedList<MenuItemDto>> GetAllMenuItemsAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (menuItems, totalItemCount) = await _menuItemRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var menuItemDtos = _mapper.Map<IEnumerable<MenuItemDto>>(menuItems);\n\n        return new PaginatedList<MenuItemDto>(menuItemDtos.ToList(), pageData);\n    }\n\n    public async Task<MenuItemDto> GetMenuItemByIdAsync(Guid itemId)\n    {\n        var menuItem = await _menuItemRepository.GetByIdAsync(itemId);\n        return menuItem == null ? null : _mapper.Map<MenuItemDto>(menuItem);\n    }\n\n    public async Task<MenuItemDto> CreateMenuItemAsync(CreateMenuItemDto menuItemDto)\n    {\n        var menuItem = _mapper.Map<MenuItem>(menuItemDto);\n        var createdMenuItem = await _menuItemRepository.CreateAsync(menuItem);\n        return _mapper.Map<MenuItemDto>(createdMenuItem);\n    }\n\n    public async Task<MenuItemDto> UpdateMenuItemAsync(Guid itemId, UpdateMenuItemDto menuItemDto)\n    {\n        var menuItem = await _menuItemRepository.GetByIdAsync(itemId);\n        if (menuItem == null) return null;\n\n        _mapper.Map(menuItemDto, menuItem);\n        var updatedMenuItem = await _menuItemRepository.UpdateAsync(menuItem);\n        return _mapper.Map<MenuItemDto>(updatedMenuItem);\n    }\n\n    public async Task<bool> DeleteMenuItemAsync(Guid itemId)\n    {\n        return await _menuItemRepository.DeleteAsync(itemId);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/MenuItemService.cs b/RestaurantReservation.Domain/Services/MenuItemService.cs
+--- a/RestaurantReservation.Domain/Services/MenuItemService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/MenuItemService.cs	(date 1735327476894)
+@@ -22,9 +22,8 @@
+     {
+         var (menuItems, totalItemCount) = await _menuItemRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var menuItemDtos = _mapper.Map<IEnumerable<MenuItemDto>>(menuItems);
+ 
+         return new PaginatedList<MenuItemDto>(menuItemDtos.ToList(), pageData);
+Index: RestaurantReservation.Db/Repositories/ReservationRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.EntityFrameworkCore;\nusing RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class ReservationRepository : CRUDRepository<Reservation>, IReservationRepository\n{\n    public ReservationRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n    \n    public async Task<(IEnumerable<Reservation>, int TotalCount)> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize)\n    {\n        if (pageNumber < 1 || pageSize < 1)\n            throw new ArgumentException(\"PageNumber and PageSize must be greater than 0.\");\n\n        var totalCount = await _context.Reservations\n            .Where(r => r.CustomerId == customerId).CountAsync();\n        var items = await _context.Reservations\n            .Where(r => r.CustomerId == customerId)\n            .Skip((pageNumber - 1) * pageSize)\n            .Take(pageSize)\n            .ToListAsync();\n\n        return (items, totalCount);\n    }\n    \n    public async Task<(IEnumerable<Order>, int TotalCount)> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize)\n    {\n        if (pageNumber < 1 || pageSize < 1)\n            throw new ArgumentException(\"PageNumber and PageSize must be greater than 0.\");\n\n        var totalCount = await _context.Orders\n            .Where(o => o.ReservationId == reservationId).CountAsync();\n        var items = await _context.Orders\n            .Where(o => o.ReservationId == reservationId)\n            .Include(o => o.OrderItems) \n            .ThenInclude(oi => oi.MenuItem) \n            .Skip((pageNumber - 1) * pageSize)\n            .Take(pageSize)\n            .ToListAsync();\n\n        return (items, totalCount);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/ReservationRepository.cs b/RestaurantReservation.Db/Repositories/ReservationRepository.cs
+--- a/RestaurantReservation.Db/Repositories/ReservationRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/ReservationRepository.cs	(date 1735325616256)
+@@ -2,15 +2,16 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class ReservationRepository : CRUDRepository<Reservation>, IReservationRepository
+ {
+-    public ReservationRepository(RestaurantReservationDbContext context) : base(context)
++    public ReservationRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+-    
++
+     public async Task<(IEnumerable<Reservation>, int TotalCount)> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize)
+     {
+         if (pageNumber < 1 || pageSize < 1)
+Index: RestaurantReservation.Domain/Services/ReservationService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Order;\nusing RestaurantReservation.Domain.Models.Reservation;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class ReservationService : IReservationService\n{\n    private readonly IReservationRepository _reservationRepository;\n    private readonly IMapper _mapper;\n\n    public ReservationService(IReservationRepository reservationRepository, IMapper mapper)\n    {\n        _reservationRepository = reservationRepository;\n        _mapper = mapper;\n    }\n\n    public async Task<PaginatedList<ReservationDto>> GetAllReservationsAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (reservations, totalItemCount) = await _reservationRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);\n\n        return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);\n    }\n\n    public async Task<ReservationDto> GetReservationByIdAsync(Guid reservationId)\n    {\n        var reservation = await _reservationRepository.GetByIdAsync(reservationId);\n        return reservation == null ? null : _mapper.Map<ReservationDto>(reservation);\n    }\n\n    public async Task<ReservationDto> CreateReservationAsync(CreateReservationDto reservationDto)\n    {\n        var reservation = _mapper.Map<Reservation>(reservationDto);\n        var createdReservation = await _reservationRepository.CreateAsync(reservation);\n        return _mapper.Map<ReservationDto>(createdReservation);\n    }\n\n    public async Task<ReservationDto> UpdateReservationAsync(Guid reservationId, UpdateReservationDto reservationDto)\n    {\n        var reservation = await _reservationRepository.GetByIdAsync(reservationId);\n        if (reservation == null) return null;\n\n        _mapper.Map(reservationDto, reservation);\n        var updatedReservation = await _reservationRepository.UpdateAsync(reservation);\n        return _mapper.Map<ReservationDto>(updatedReservation);\n    }\n\n    public async Task<bool> DeleteReservationAsync(Guid reservationId)\n    {\n        return await _reservationRepository.DeleteAsync(reservationId);\n    }\n    \n    public async Task<PaginatedList<ReservationDto>> GetReservationsByCustomerIdAsync(Guid customerId,int pageNumber, int pageSize, string baseUrl)\n    {\n        var (reservations, totalItemCount) = await _reservationRepository.GetReservationsByCustomerIdAsync(customerId, pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);\n\n        return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);\n        \n    }\n    \n    public async Task<PaginatedList<DetailedOrderDto>> GetOrdersByReservationIdAsync(Guid reservationId, int pageNumber, int pageSize, string baseUrl)\n    {\n        var (orders, totalItemCount) = await _reservationRepository.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var orderDtos = _mapper.Map<IEnumerable<DetailedOrderDto>>(orders);\n\n        return new PaginatedList<DetailedOrderDto>(orderDtos.ToList(), pageData);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/ReservationService.cs b/RestaurantReservation.Domain/Services/ReservationService.cs
+--- a/RestaurantReservation.Domain/Services/ReservationService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/ReservationService.cs	(date 1735327474920)
+@@ -23,9 +23,8 @@
+     {
+         var (reservations, totalItemCount) = await _reservationRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+ 
+         return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);
+@@ -63,9 +62,8 @@
+     {
+         var (reservations, totalItemCount) = await _reservationRepository.GetReservationsByCustomerIdAsync(customerId, pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var reservationDtos = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+ 
+         return new PaginatedList<ReservationDto>(reservationDtos.ToList(), pageData);
+@@ -76,9 +74,8 @@
+     {
+         var (orders, totalItemCount) = await _reservationRepository.GetOrdersByReservationIdAsync(reservationId, pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var orderDtos = _mapper.Map<IEnumerable<DetailedOrderDto>>(orders);
+ 
+         return new PaginatedList<DetailedOrderDto>(orderDtos.ToList(), pageData);
+Index: RestaurantReservation.Db/Repositories/TableRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class TableRepository : CRUDRepository<Table>, ITableRepository\n{\n    public TableRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/TableRepository.cs b/RestaurantReservation.Db/Repositories/TableRepository.cs
+--- a/RestaurantReservation.Db/Repositories/TableRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/TableRepository.cs	(date 1735325616321)
+@@ -1,12 +1,13 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class TableRepository : CRUDRepository<Table>, ITableRepository
+ {
+-    public TableRepository(RestaurantReservationDbContext context) : base(context)
++    public TableRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Domain/Services/TableService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Table;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class TableService : ITableService\n{\n    private readonly ITableRepository _tableRepository;\n    private readonly IMapper _mapper;\n\n    public TableService(ITableRepository tableRepository, IMapper mapper)\n    {\n        _tableRepository = tableRepository;\n        _mapper = mapper;\n    }\n\n    public async Task<PaginatedList<TableDto>> GetAllTablesAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (tables, totalItemCount) = await _tableRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var tableDtos = _mapper.Map<IEnumerable<TableDto>>(tables);\n\n        return new PaginatedList<TableDto>(tableDtos.ToList(), pageData);\n    }\n\n    public async Task<TableDto> GetTableByIdAsync(Guid tableId)\n    {\n        var table = await _tableRepository.GetByIdAsync(tableId);\n        return table == null ? null : _mapper.Map<TableDto>(table);\n    }\n\n    public async Task<TableDto> CreateTableAsync(CreateTableDto tableDto)\n    {\n        var table = _mapper.Map<Table>(tableDto);\n        var createdTable = await _tableRepository.CreateAsync(table);\n        return _mapper.Map<TableDto>(createdTable);\n    }\n\n    public async Task<TableDto> UpdateTableAsync(Guid tableId, UpdateTableDto tableDto)\n    {\n        var table = await _tableRepository.GetByIdAsync(tableId);\n        if (table == null) return null;\n\n        _mapper.Map(tableDto, table);\n        var updatedTable = await _tableRepository.UpdateAsync(table);\n        return _mapper.Map<TableDto>(updatedTable);\n    }\n\n    public async Task<bool> DeleteTableAsync(Guid tableId)\n    {\n        return await _tableRepository.DeleteAsync(tableId);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/TableService.cs b/RestaurantReservation.Domain/Services/TableService.cs
+--- a/RestaurantReservation.Domain/Services/TableService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/TableService.cs	(date 1735327476558)
+@@ -22,9 +22,8 @@
+     {
+         var (tables, totalItemCount) = await _tableRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var tableDtos = _mapper.Map<IEnumerable<TableDto>>(tables);
+ 
+         return new PaginatedList<TableDto>(tableDtos.ToList(), pageData);
+Index: RestaurantReservation.Db/Repositories/OrderRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class OrderRepository : CRUDRepository<Order>, IOrderRepository\n{\n    public OrderRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/OrderRepository.cs b/RestaurantReservation.Db/Repositories/OrderRepository.cs
+--- a/RestaurantReservation.Db/Repositories/OrderRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/OrderRepository.cs	(date 1735325616212)
+@@ -1,12 +1,13 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class OrderRepository : CRUDRepository<Order>, IOrderRepository
+ {
+-    public OrderRepository(RestaurantReservationDbContext context) : base(context)
++    public OrderRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+ }
+\ No newline at end of file
+Index: .idea/.idea.RestaurantReservationCore/.idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoGeneratedRunConfigurationManager\">\n    <projectFile profileName=\"http\">RestaurantReservation.API/RestaurantReservation.API.csproj</projectFile>\n    <projectFile profileName=\"https\">RestaurantReservation.API/RestaurantReservation.API.csproj</projectFile>\n    <projectFile profileName=\"http\">RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj</projectFile>\n    <projectFile profileName=\"https\">RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj</projectFile>\n  </component>\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"c4a42ca2-ee85-4894-b10d-ff710b7d6864\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"DpaMonitoringSettings\">\n    <option name=\"autoShow\" value=\"false\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"HighlightingSettingsPerFile\">\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9191eac31f284a10b284fabb9f96c4bcc2d600/94/f95d1264/Directory.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b34eef3a22e5b353fa75af531b179226d42b88d39fbefa3f0d8d4372def62a3/HttpRequest.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fd835a55676976b3933e80134c6e68587569c6383717d386e32295d11fcf3f/ApiVersion.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"mock:///home/jameel-sawafta/Projects/C#Projects/RestaurantReservationCore/RestaurantReservation.Db/Repositories/ReservationRepository.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"mock:///home/jameel-sawafta/Projects/C#Projects/RestaurantReservationCore/RestaurantReservation.Db/Repositories/ReservationRepository.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2pfPEZhbtXflsKCASiZwaAbK9Dq\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"1\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor&quot;: &quot;Run&quot;,\n    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor&quot;: &quot;Run&quot;,\n    &quot;.NET Project.RestaurantReservation.CompositionRoot.executor&quot;: &quot;Run&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;master&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RunManager\" selected=\".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https\">\n    <configuration name=\"RestaurantReservation.CompositionRoot\" type=\"DotNetProject\" factoryName=\".NET Project\">\n      <option name=\"EXE_PATH\" value=\"\" />\n      <option name=\"PROGRAM_PARAMETERS\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\n      <option name=\"PASS_PARENT_ENVS\" value=\"1\" />\n      <option name=\"USE_EXTERNAL_CONSOLE\" value=\"0\" />\n      <option name=\"USE_MONO\" value=\"0\" />\n      <option name=\"RUNTIME_ARGUMENTS\" value=\"\" />\n      <option name=\"PROJECT_PATH\" value=\"$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj\" />\n      <option name=\"PROJECT_EXE_PATH_TRACKING\" value=\"1\" />\n      <option name=\"PROJECT_ARGUMENTS_TRACKING\" value=\"1\" />\n      <option name=\"PROJECT_WORKING_DIRECTORY_TRACKING\" value=\"1\" />\n      <option name=\"PROJECT_KIND\" value=\"DotNetCore\" />\n      <option name=\"PROJECT_TFM\" value=\"\" />\n      <method v=\"2\">\n        <option name=\"Build\" />\n      </method>\n    </configuration>\n    <configuration name=\"RestaurantReservation.CompositionRoot: http\" type=\"LaunchSettings\" factoryName=\".NET Launch Settings Profile\">\n      <option name=\"LAUNCH_PROFILE_PROJECT_FILE_PATH\" value=\"$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj\" />\n      <option name=\"LAUNCH_PROFILE_TFM\" value=\"net8.0\" />\n      <option name=\"LAUNCH_PROFILE_NAME\" value=\"http\" />\n      <option name=\"USE_EXTERNAL_CONSOLE\" value=\"0\" />\n      <option name=\"USE_MONO\" value=\"0\" />\n      <option name=\"RUNTIME_ARGUMENTS\" value=\"\" />\n      <option name=\"GENERATE_APPLICATIONHOST_CONFIG\" value=\"1\" />\n      <option name=\"SHOW_IIS_EXPRESS_OUTPUT\" value=\"0\" />\n      <option name=\"SEND_DEBUG_REQUEST\" value=\"1\" />\n      <option name=\"ADDITIONAL_IIS_EXPRESS_ARGUMENTS\" value=\"\" />\n      <method v=\"2\">\n        <option name=\"Build\" />\n      </method>\n    </configuration>\n    <configuration name=\"RestaurantReservation.CompositionRoot: https\" type=\"LaunchSettings\" factoryName=\".NET Launch Settings Profile\">\n      <option name=\"LAUNCH_PROFILE_PROJECT_FILE_PATH\" value=\"$PROJECT_DIR$/RestaurantReservation.CompositionRoot/RestaurantReservation.CompositionRoot.csproj\" />\n      <option name=\"LAUNCH_PROFILE_TFM\" value=\"net8.0\" />\n      <option name=\"LAUNCH_PROFILE_NAME\" value=\"https\" />\n      <option name=\"USE_EXTERNAL_CONSOLE\" value=\"0\" />\n      <option name=\"USE_MONO\" value=\"0\" />\n      <option name=\"RUNTIME_ARGUMENTS\" value=\"\" />\n      <option name=\"GENERATE_APPLICATIONHOST_CONFIG\" value=\"1\" />\n      <option name=\"SHOW_IIS_EXPRESS_OUTPUT\" value=\"0\" />\n      <option name=\"SEND_DEBUG_REQUEST\" value=\"1\" />\n      <option name=\"ADDITIONAL_IIS_EXPRESS_ARGUMENTS\" value=\"\" />\n      <method v=\"2\">\n        <option name=\"Build\" />\n      </method>\n    </configuration>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"c4a42ca2-ee85-4894-b10d-ff710b7d6864\" name=\"Changes\" comment=\"\" />\n      <created>1733154045722</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1733154045722</updated>\n      <workItem from=\"1733154046836\" duration=\"8557000\" />\n      <workItem from=\"1733204812550\" duration=\"13160000\" />\n      <workItem from=\"1733307368521\" duration=\"6502000\" />\n      <workItem from=\"1733394879260\" duration=\"5386000\" />\n      <workItem from=\"1733429390266\" duration=\"12295000\" />\n      <workItem from=\"1733481797986\" duration=\"18088000\" />\n      <workItem from=\"1733570736430\" duration=\"18171000\" />\n      <workItem from=\"1733656253716\" duration=\"17255000\" />\n      <workItem from=\"1733740817580\" duration=\"32497000\" />\n      <workItem from=\"1733825400461\" duration=\"959000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"UnityProjectConfiguration\" hasMinimizedUI=\"false\" />\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"CLEAR_INITIAL_COMMIT_MESSAGE\" value=\"true\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml b/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml
+--- a/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml	(date 1734893880527)
+@@ -12,7 +12,6 @@
+   <component name="ChangeListManager">
+     <list default="true" id="c4a42ca2-ee85-4894-b10d-ff710b7d6864" name="Changes" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RestaurantReservationCore/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/RestaurantReservation.CompositionRoot/Program.cs" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -46,21 +45,26 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor&quot;: &quot;Run&quot;,
+-    &quot;.NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor&quot;: &quot;Run&quot;,
+-    &quot;.NET Project.RestaurantReservation.CompositionRoot.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: http.executor": "Run",
++    ".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https.executor": "Run",
++    ".NET Project.RestaurantReservation.CompositionRoot.executor": "Run",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "git-widget-placeholder": "master",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "vue.rearranger.settings.migration": "true"
++  },
++  "keyToStringList": {
++    "DatabaseDriversLRU": [
++      "postgresql"
++    ]
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager" selected=".NET Launch Settings Profile.RestaurantReservation.CompositionRoot: https">
+     <configuration name="RestaurantReservation.CompositionRoot" type="DotNetProject" factoryName=".NET Project">
+       <option name="EXE_PATH" value="" />
+@@ -128,7 +132,8 @@
+       <workItem from="1733570736430" duration="18171000" />
+       <workItem from="1733656253716" duration="17255000" />
+       <workItem from="1733740817580" duration="32497000" />
+-      <workItem from="1733825400461" duration="959000" />
++      <workItem from="1733825400461" duration="1800000" />
++      <workItem from="1734893045876" duration="828000" />
+     </task>
+     <servers />
+   </component>
+Index: RestaurantReservation.Domain/Services/OrderService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\nusing RestaurantReservation.Domain.Interfaces.Services;\nusing RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Order;\n\nnamespace RestaurantReservation.Domain.Services;\n\npublic class OrderService : IOrderService\n{\n    private readonly IOrderRepository _orderRepository;\n    private readonly IMapper _mapper;\n\n    public OrderService(IOrderRepository orderRepository, IMapper mapper)\n    {\n        _orderRepository = orderRepository;\n        _mapper = mapper;\n    }\n\n    public async Task<PaginatedList<OrderDto>> GetAllOrdersAsync(int pageNumber, int pageSize, string baseUrl)\n    {\n        var (orders, totalItemCount) = await _orderRepository.GetAllAsync(pageNumber, pageSize);\n\n        string GeneratePageLink(int page) => $\"{baseUrl}?pageNumber={page}&pageSize={pageSize}\";\n\n        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);\n        var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);\n\n        return new PaginatedList<OrderDto>(orderDtos.ToList(), pageData);\n    }\n\n    public async Task<OrderDto> GetOrderByIdAsync(Guid orderId)\n    {\n        var order = await _orderRepository.GetByIdAsync(orderId);\n        return order == null ? null : _mapper.Map<OrderDto>(order);\n    }\n\n    public async Task<OrderDto> CreateOrderAsync(CreateOrderDto orderDto)\n    {\n        var order = _mapper.Map<Order>(orderDto);\n        var createdOrder = await _orderRepository.CreateAsync(order);\n        return _mapper.Map<OrderDto>(createdOrder);\n    }\n\n    public async Task<OrderDto> UpdateOrderAsync(Guid orderId, UpdateOrderDto orderDto)\n    {\n        var order = await _orderRepository.GetByIdAsync(orderId);\n        if (order == null) return null;\n\n        _mapper.Map(orderDto, order);\n        var updatedOrder = await _orderRepository.UpdateAsync(order);\n        return _mapper.Map<OrderDto>(updatedOrder);\n    }\n\n    public async Task<bool> DeleteOrderAsync(Guid orderId)\n    {\n        return await _orderRepository.DeleteAsync(orderId);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Services/OrderService.cs b/RestaurantReservation.Domain/Services/OrderService.cs
+--- a/RestaurantReservation.Domain/Services/OrderService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Services/OrderService.cs	(date 1735327476760)
+@@ -22,9 +22,8 @@
+     {
+         var (orders, totalItemCount) = await _orderRepository.GetAllAsync(pageNumber, pageSize);
+ 
+-        string GeneratePageLink(int page) => $"{baseUrl}?pageNumber={page}&pageSize={pageSize}";
+ 
+-        var pageData = new PageData(totalItemCount, pageSize, pageNumber, GeneratePageLink);
++        var pageData = new PageData(totalItemCount, pageSize, pageNumber);
+         var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
+ 
+         return new PaginatedList<OrderDto>(orderDtos.ToList(), pageData);
+Index: RestaurantReservation.Domain/Profiles/EmployeeMappingProfile.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using AutoMapper;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Models.Employee;\n\nnamespace RestaurantReservation.Domain.Profiles;\n\npublic class EmployeeMappingProfile : Profile\n{\n    public EmployeeMappingProfile()\n    {\n        CreateMap<Employee, EmployeeDto>();\n        CreateMap<CreateEmployeeDto, Employee>();\n        CreateMap<UpdateEmployeeDto, Employee>();\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Profiles/EmployeeMappingProfile.cs b/RestaurantReservation.Domain/Profiles/EmployeeMappingProfile.cs
+--- a/RestaurantReservation.Domain/Profiles/EmployeeMappingProfile.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Profiles/EmployeeMappingProfile.cs	(date 1735396896694)
+@@ -8,8 +8,7 @@
+ {
+     public EmployeeMappingProfile()
+     {
+-        CreateMap<Employee, EmployeeDto>();
+-        CreateMap<CreateEmployeeDto, Employee>();
+-        CreateMap<UpdateEmployeeDto, Employee>();
++        CreateMap<Employee, EmployeeDto>().ReverseMap();
++        CreateMap<CreateAndUpdateEmployeeDto, Employee>();
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Db/Repositories/EmployeeRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.EntityFrameworkCore;\nusing RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Enums;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class EmployeeRepository : CRUDRepository<Employee>, IEmployeeRepository\n{\n    public EmployeeRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n    \n    public async Task<(IEnumerable<Employee>, int TotalCount)> GetManagersAsync(int pageNumber, int pageSize)\n    {\n        if (pageNumber < 1 || pageSize < 1)\n            throw new ArgumentException(\"PageNumber and PageSize must be greater than 0.\");\n\n        var totalCount = await _context.Employees.Where(m => m.Position == EmployeePosition.Manager).CountAsync();\n        var items = await _context.Employees\n            .Where(e => e.Position == EmployeePosition.Manager)\n            .Skip((pageNumber - 1) * pageSize)\n            .Take(pageSize)\n            .ToListAsync();\n\n        return (items, totalCount);\n    }\n    \n    public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)\n    {\n        var orders = await _context.Orders\n            .Where(o => o.EmployeeId == employeeId)\n            .ToListAsync();\n\n        if (!orders.Any())\n            return 0;\n\n        return orders.Average(o => o.TotalAmount);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/EmployeeRepository.cs b/RestaurantReservation.Db/Repositories/EmployeeRepository.cs
+--- a/RestaurantReservation.Db/Repositories/EmployeeRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/EmployeeRepository.cs	(date 1735400951078)
+@@ -3,28 +3,24 @@
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Enums;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class EmployeeRepository : CRUDRepository<Employee>, IEmployeeRepository
+ {
+-    public EmployeeRepository(RestaurantReservationDbContext context) : base(context)
++    private readonly PaginationService _paginationService;
++
++    public EmployeeRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
++        _paginationService = paginationService;
+     }
+-    
++
+     public async Task<(IEnumerable<Employee>, int TotalCount)> GetManagersAsync(int pageNumber, int pageSize)
+     {
+-        if (pageNumber < 1 || pageSize < 1)
+-            throw new ArgumentException("PageNumber and PageSize must be greater than 0.");
+-
+-        var totalCount = await _context.Employees.Where(m => m.Position == EmployeePosition.Manager).CountAsync();
+-        var items = await _context.Employees
+-            .Where(e => e.Position == EmployeePosition.Manager)
+-            .Skip((pageNumber - 1) * pageSize)
+-            .Take(pageSize)
+-            .ToListAsync();
+-
+-        return (items, totalCount);
++        var query = _dbSet.Where(m => m.Position == EmployeePosition.Manager).AsQueryable();
++        var (items, totalItemCount) = await _paginationService.PaginateAsync(query, pageNumber, pageSize);
++        return (items, totalItemCount);
+     }
+     
+     public async Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId)
+Index: RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Domain.Models;\nusing RestaurantReservation.Domain.Models.Employee;\n\nnamespace RestaurantReservation.Domain.Interfaces.Services;\n\npublic interface IEmployeeService\n{\n    Task<PaginatedList<EmployeeDto>> GetAllEmployeesAsync(int pageNumber, int pageSize, string baseUrl);\n    Task<EmployeeDto> GetEmployeeByIdAsync(Guid id);\n    Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto employeeDto);\n    Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto);\n    Task<bool> DeleteEmployeeAsync(Guid id);\n    \n    Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl);\n    Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId);\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs b/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs
+--- a/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Domain/Interfaces/Services/IEmployeeService.cs	(date 1735397189558)
+@@ -3,14 +3,8 @@
+ 
+ namespace RestaurantReservation.Domain.Interfaces.Services;
+ 
+-public interface IEmployeeService
++public interface IEmployeeService : ICRUDService<EmployeeDto,CreateAndUpdateEmployeeDto>
+ {
+-    Task<PaginatedList<EmployeeDto>> GetAllEmployeesAsync(int pageNumber, int pageSize, string baseUrl);
+-    Task<EmployeeDto> GetEmployeeByIdAsync(Guid id);
+-    Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto employeeDto);
+-    Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto);
+-    Task<bool> DeleteEmployeeAsync(Guid id);
+-    
+-    Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize, string baseUrl);
++    Task<PaginatedList<EmployeeDto>> GetManagersAsync(int pageNumber, int pageSize);
+     Task<decimal> GetAverageOrderAmountByEmployeeAsync(Guid employeeId);
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Db/Repositories/RestaurantRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class RestaurantRepository : CRUDRepository<Restaurant>, IRestaurantRepository\n{\n    public RestaurantRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/RestaurantRepository.cs b/RestaurantReservation.Db/Repositories/RestaurantRepository.cs
+--- a/RestaurantReservation.Db/Repositories/RestaurantRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/RestaurantRepository.cs	(date 1735325616370)
+@@ -1,12 +1,13 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class RestaurantRepository : CRUDRepository<Restaurant>, IRestaurantRepository
+ {
+-    public RestaurantRepository(RestaurantReservationDbContext context) : base(context)
++    public RestaurantRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+ }
+\ No newline at end of file
+Index: RestaurantReservation.Db/Repositories/OrderItemRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using RestaurantReservation.Db.DbContext;\nusing RestaurantReservation.Domain.Entities;\nusing RestaurantReservation.Domain.Interfaces.Repositories;\n\nnamespace RestaurantReservation.Db.Repositories;\n\npublic class OrderItemRepository : CRUDRepository<OrderItem>, IOrderItemRepository\n{\n    public OrderItemRepository(RestaurantReservationDbContext context) : base(context)\n    {\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RestaurantReservation.Db/Repositories/OrderItemRepository.cs b/RestaurantReservation.Db/Repositories/OrderItemRepository.cs
+--- a/RestaurantReservation.Db/Repositories/OrderItemRepository.cs	(revision d3305997a0c6b301c3560458ff5a37edc0bcfef6)
++++ b/RestaurantReservation.Db/Repositories/OrderItemRepository.cs	(date 1735325616167)
+@@ -1,12 +1,13 @@
+ using RestaurantReservation.Db.DbContext;
+ using RestaurantReservation.Domain.Entities;
+ using RestaurantReservation.Domain.Interfaces.Repositories;
++using RestaurantReservation.Domain.Services;
+ 
+ namespace RestaurantReservation.Db.Repositories;
+ 
+ public class OrderItemRepository : CRUDRepository<OrderItem>, IOrderItemRepository
+ {
+-    public OrderItemRepository(RestaurantReservationDbContext context) : base(context)
++    public OrderItemRepository(RestaurantReservationDbContext context, PaginationService paginationService) : base(context, paginationService)
+     {
+     }
+ }
+\ No newline at end of file
