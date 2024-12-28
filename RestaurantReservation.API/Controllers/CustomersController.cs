@@ -21,10 +21,10 @@ public class CustomersController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<CustomerDto>>> GetAll(int pageNumber, int pageSize)
+    public async Task<PaginatedList<CustomerDto>> GetAll(int pageNumber, int pageSize)
     {
         var paginatedCustomers = await _customerService.GetAllAsync(pageNumber, pageSize);
-        return Ok(paginatedCustomers);
+        return paginatedCustomers;
     }
 
     [HttpGet("{id}")]
