@@ -19,7 +19,10 @@ public class CRUDService<T,TDto> : ICRUDService<TDto> where T : class
     public async Task<PaginatedList<TDto>> GetAllAsync(int pageNumber, int pageSize)
     {
         var (items, totalItemCount) = await _repository.GetAllAsync(pageNumber, pageSize);
-
+        if (totalItemCount == 0)
+        {
+            throw new KeyNotFoundException($"{nameof(T)} with not data found.");
+        }
         var pageData = new PageData(totalItemCount, pageSize, pageNumber);
         var dtos = _mapper.Map<IEnumerable<TDto>>(items);
 
@@ -29,6 +32,10 @@ public class CRUDService<T,TDto> : ICRUDService<TDto> where T : class
     public async Task<TDto> GetByIdAsync(Guid id)
     {
         var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException($"{typeof(T).Name} with ID {id} not found.");
+        }
         return _mapper.Map<TDto>(entity);
     }
 

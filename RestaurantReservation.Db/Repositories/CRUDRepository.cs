@@ -22,32 +22,20 @@ public class CRUDRepository<T> : ICRUDRepository<T> where T : class
     public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
     {
         var query = _dbSet.AsQueryable();
-        var (items, totalCount) = await _paginationService.PaginateAsync(query, pageNumber, pageSize);
-        if (totalCount == 0)
-        {
-            throw new KeyNotFoundException($"{nameof(T)} with not data found.");
-        }
-        return (items, totalCount);
+        var (items, totalItemCount) = await _paginationService.PaginateAsync(query, pageNumber, pageSize);
+        return (items, totalItemCount);
     }
 
     public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync()
     {
         var data = await _dbSet.ToListAsync();
-        if (data.Count == 0)
-        {
-            throw new KeyNotFoundException($"{nameof(T)} with not data found.");
-        }
         return (data, data.Count);
     }
 
     public async Task<T> GetByIdAsync(Guid id)
     {
-        var data = await _dbSet.FindAsync(id);
-        if (data == null)
-        {
-            throw new KeyNotFoundException($"{typeof(T).Name} with ID {id} not found.");
-        }
-        return data;
+        var entity = await _dbSet.FindAsync(id);
+        return entity;
     }
 
     public async Task<T> CreateAsync(T entity)
